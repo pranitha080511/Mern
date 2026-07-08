@@ -3,47 +3,74 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Hikari's Luxe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body>
+<body class="bg-pink-50">
 
+    <section class="flex justify-center items-center min-h-screen">
 
+        <div class="bg-white shadow-xl rounded-xl p-8 w-full max-w-md">
 
+            <h2 class="text-3xl font-bold text-center text-pink-600 mb-8">
+                Login
+            </h2>
 
-    <section>
+            <form>
 
-        <h2>Login</h2>
+                <label class="font-semibold">Email</label><br>
+                <input
+                    type="email"
+                    placeholder="Enter your email"
+                    class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-pink-500">
 
-        <form>
+                <br><br>
 
-            <label>Email</label><br>
-            <input type="email" placeholder="Enter your email">
+                <label class="font-semibold">Password</label><br>
+                <input
+                    type="password"
+                    placeholder="Enter password"
+                    class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-pink-500">
 
-            <br><br>
+                <br><br>
 
-            <label>Password</label><br>
-            <input type="password" placeholder="Enter password">
+                <label class="flex items-center gap-2">
+                    <input type="checkbox" class="accent-pink-600">
+                    Remember Me
+                </label>
 
-            <br><br>
+                <br>
 
-            <input type="checkbox"> Remember Me
+                <div class="flex justify-center gap-4">
 
-            <br><br>
+                    <button
+                        type="submit"
+                        class="bg-pink-600 hover:bg-pink-700 text-white px-6 py-3 rounded-lg transition">
+                        Login
+                    </button>
 
-            <button type="submit">Login</button>
-            <button type="reset">Reset</button>
+                    <button
+                        type="reset"
+                        class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg transition">
+                        Reset
+                    </button>
 
-        </form>
+                </div>
 
-        <p>
-            Don't have an account?
-            <a href="signup.html">Create Account</a>
-        </p>
+            </form>
+
+            <p class="text-center mt-6">
+                Don't have an account?
+                <a href="signup.html" class="text-pink-600 font-semibold hover:underline">
+                    Create Account
+                </a>
+            </p>
+
+        </div>
 
     </section>
-
-    
 
 </body>
 

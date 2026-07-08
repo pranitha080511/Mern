@@ -5,35 +5,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Products - Hikari's Luxe</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body>
+<body class="bg-pink-50">
 
-    <header>
+    <header class="bg-black p-5">
 
-        <table width="100%">
+        <table class="w-full">
 
             <tr>
 
-                <td width="25%">
+                <td class="w-1/4"></td>
+
+                <td class="w-1/2 text-center">
+
+                    <h1 class="text-4xl font-bold text-white font-serif">
+                        Hikari's Luxe
+                    </h1>
+
+                    <h2 class="text-xl text-white font-serif">
+                        Cosmetics World
+                    </h2>
+
                 </td>
 
-                <td width="50%" align="center">
-
-                    <h1>Hikari's Luxe</h1>
-
-                    <h2>Cosmetics World</h2>
-
-                </td>
-
-                <td width="25%" align="right">
+                <td class="w-1/4 text-right">
 
                     <a href="login.html">
-                        <button>Login</button>
+                        <button class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-full">
+                            Login
+                        </button>
                     </a>
 
                     <a href="signup.html">
-                        <button>Sign Up</button>
+                        <button class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-full">
+                            Sign Up
+                        </button>
                     </a>
 
                 </td>
@@ -42,12 +51,15 @@
 
         </table>
 
-        <nav align="center">
+        <nav class="text-center mt-5 text-white font-semibold space-x-3">
 
-            <a href="index.html">Home</a> |
-            <a href="about.html">About</a> |
-            <a href="product.html">Products</a> |
-            <a href="profile.html">Profile</a>
+            <a href="index.html" class="hover:text-red-500">Home</a> |
+
+            <a href="about.html" class="hover:text-red-500">About</a> |
+
+            <a href="product.html" class="hover:text-red-500">Products</a> |
+
+            <a href="profile.html" class="hover:text-red-500">Profile</a>
 
         </nav>
 
@@ -55,71 +67,77 @@
 
     <hr>
 
-    <section>
+    <section class="py-10">
 
-        <h2>Our Products</h2>
+        <h2 class="text-3xl font-bold text-center text-pink-600 mb-8">
+            Our Products
+        </h2>
 
-        <table cellpadding="20" cellspacing="10">
+        <table class="mx-auto border-separate border-spacing-6">
 
             <tr>
 
-                <td align="center">
+                <td class="bg-white rounded-xl shadow-lg p-5 text-center">
 
                     <img src="images/lipstick.jpg"
-                         width="180"
-                         height="180"
-                         alt="Lipstick">
+                        class="w-44 h-44 object-cover rounded-lg mx-auto"
+                        alt="Lipstick">
 
-                    <h3>Matte Lipstick</h3>
+                    <h3 class="text-xl font-semibold mt-4">Matte Lipstick</h3>
 
-                    <p><strong>₹799</strong></p>
+                    <p class="font-bold text-pink-600 mt-2">₹799</p>
 
-                    <button>Add to Cart</button>
+                    <button class="bg-pink-600 hover:bg-pink-700 text-white px-5 py-2 rounded-lg mt-3">
+                        Add to Cart
+                    </button>
 
                 </td>
 
-                <td align="center">
+                <td class="bg-white rounded-xl shadow-lg p-5 text-center">
 
                     <img src="images/serum.jpg"
-                         width="180"
-                         height="180"
-                         alt="Serum">
+                        class="w-44 h-44 object-cover rounded-lg mx-auto"
+                        alt="Serum">
 
-                    <h3>Vitamin C Serum</h3>
+                    <h3 class="text-xl font-semibold mt-4">Vitamin C Serum</h3>
 
-                    <p><strong>₹999</strong></p>
+                    <p class="font-bold text-pink-600 mt-2">₹999</p>
 
-                    <button>Add to Cart</button>
+                    <button class="bg-pink-600 hover:bg-pink-700 text-white px-5 py-2 rounded-lg mt-3">
+                        Add to Cart
+                    </button>
 
                 </td>
 
-                <td align="center">
+                <td class="bg-white rounded-xl shadow-lg p-5 text-center">
 
                     <img src="images/moisturizer.jpg"
-                         width="180"
-                         height="180"
-                         alt="Moisturizer">
+                        class="w-44 h-44 object-cover rounded-lg mx-auto"
+                        alt="Moisturizer">
 
-                    <h3>Face Cream</h3>
+                    <h3 class="text-xl font-semibold mt-4">Face Cream</h3>
 
-                    <p><strong>₹699</strong></p>
+                    <p class="font-bold text-pink-600 mt-2">₹699</p>
 
-                    <button>Add to Cart</button>
+                    <button class="bg-pink-600 hover:bg-pink-700 text-white px-5 py-2 rounded-lg mt-3">
+                        Add to Cart
+                    </button>
 
                 </td>
 
-                <td align="center">
+                <td class="bg-white rounded-xl shadow-lg p-5 text-center">
 
                     <img src="images/perfume.jpg"
-                         width="180"
-                         height="180"
-                         alt="Perfume">
+                        class="w-44 h-44 object-cover rounded-lg mx-auto"
+                        alt="Perfume">
 
-                    <h3>Luxury Perfume</h3>
+                    <h3 class="text-xl font-semibold mt-4">Luxury Perfume</h3>
 
-                    <p><strong>₹1999</strong></p>
+                    <p class="font-bold text-pink-600 mt-2">₹1999</p>
 
-                    <button>Add to Cart</button>
+                    <button class="bg-pink-600 hover:bg-pink-700 text-white px-5 py-2 rounded-lg mt-3">
+                        Add to Cart
+                    </button>
 
                 </td>
 
@@ -127,63 +145,67 @@
 
             <tr>
 
-                <td align="center">
+                <td class="bg-white rounded-xl shadow-lg p-5 text-center">
 
                     <img src="images/nail.jpg"
-                         width="180"
-                         height="180"
-                         alt="Nail Polish">
+                        class="w-44 h-44 object-cover rounded-lg mx-auto"
+                        alt="Nail Polish">
 
-                    <h3>Nail Polish</h3>
+                    <h3 class="text-xl font-semibold mt-4">Nail Polish</h3>
 
-                    <p><strong>₹499</strong></p>
+                    <p class="font-bold text-pink-600 mt-2">₹499</p>
 
-                    <button>Add to Cart</button>
+                    <button class="bg-pink-600 hover:bg-pink-700 text-white px-5 py-2 rounded-lg mt-3">
+                        Add to Cart
+                    </button>
 
                 </td>
 
-                <td align="center">
+                <td class="bg-white rounded-xl shadow-lg p-5 text-center">
 
                     <img src="images/foundation.jpg"
-                         width="180"
-                         height="180"
-                         alt="Foundation">
+                        class="w-44 h-44 object-cover rounded-lg mx-auto"
+                        alt="Foundation">
 
-                    <h3>Foundation</h3>
+                    <h3 class="text-xl font-semibold mt-4">Foundation</h3>
 
-                    <p><strong>₹1099</strong></p>
+                    <p class="font-bold text-pink-600 mt-2">₹1099</p>
 
-                    <button>Add to Cart</button>
+                    <button class="bg-pink-600 hover:bg-pink-700 text-white px-5 py-2 rounded-lg mt-3">
+                        Add to Cart
+                    </button>
 
                 </td>
 
-                <td align="center">
+                <td class="bg-white rounded-xl shadow-lg p-5 text-center">
 
                     <img src="images/eyeliner.jpg"
-                         width="180"
-                         height="180"
-                         alt="Eyeliner">
+                        class="w-44 h-44 object-cover rounded-lg mx-auto"
+                        alt="Eyeliner">
 
-                    <h3>Waterproof Eyeliner</h3>
+                    <h3 class="text-xl font-semibold mt-4">Waterproof Eyeliner</h3>
 
-                    <p><strong>₹399</strong></p>
+                    <p class="font-bold text-pink-600 mt-2">₹399</p>
 
-                    <button>Add to Cart</button>
+                    <button class="bg-pink-600 hover:bg-pink-700 text-white px-5 py-2 rounded-lg mt-3">
+                        Add to Cart
+                    </button>
 
                 </td>
 
-                <td align="center">
+                <td class="bg-white rounded-xl shadow-lg p-5 text-center">
 
                     <img src="images/facewash.jpg"
-                         width="180"
-                         height="180"
-                         alt="Face Wash">
+                        class="w-44 h-44 object-cover rounded-lg mx-auto"
+                        alt="Face Wash">
 
-                    <h3>Face Wash</h3>
+                    <h3 class="text-xl font-semibold mt-4">Face Wash</h3>
 
-                    <p><strong>₹599</strong></p>
+                    <p class="font-bold text-pink-600 mt-2">₹599</p>
 
-                    <button>Add to Cart</button>
+                    <button class="bg-pink-600 hover:bg-pink-700 text-white px-5 py-2 rounded-lg mt-3">
+                        Add to Cart
+                    </button>
 
                 </td>
 
@@ -191,63 +213,67 @@
 
             <tr>
 
-                <td align="center">
+                <td class="bg-white rounded-xl shadow-lg p-5 text-center">
 
                     <img src="images/sunscreen.jpg"
-                         width="180"
-                         height="180"
-                         alt="Sunscreen">
+                        class="w-44 h-44 object-cover rounded-lg mx-auto"
+                        alt="Sunscreen">
 
-                    <h3>Sunscreen SPF 50</h3>
+                    <h3 class="text-xl font-semibold mt-4">Sunscreen SPF 50</h3>
 
-                    <p><strong>₹899</strong></p>
+                    <p class="font-bold text-pink-600 mt-2">₹899</p>
 
-                    <button>Add to Cart</button>
+                    <button class="bg-pink-600 hover:bg-pink-700 text-white px-5 py-2 rounded-lg mt-3">
+                        Add to Cart
+                    </button>
 
                 </td>
 
-                <td align="center">
+                <td class="bg-white rounded-xl shadow-lg p-5 text-center">
 
                     <img src="images/blush.jpg"
-                         width="180"
-                         height="180"
-                         alt="Blush">
+                        class="w-44 h-44 object-cover rounded-lg mx-auto"
+                        alt="Blush">
 
-                    <h3>Blush Palette</h3>
+                    <h3 class="text-xl font-semibold mt-4">Blush Palette</h3>
 
-                    <p><strong>₹749</strong></p>
+                    <p class="font-bold text-pink-600 mt-2">₹749</p>
 
-                    <button>Add to Cart</button>
+                    <button class="bg-pink-600 hover:bg-pink-700 text-white px-5 py-2 rounded-lg mt-3">
+                        Add to Cart
+                    </button>
 
                 </td>
 
-                <td align="center">
+                <td class="bg-white rounded-xl shadow-lg p-5 text-center">
 
                     <img src="images/compact.jpg"
-                         width="180"
-                         height="180"
-                         alt="Compact">
+                        class="w-44 h-44 object-cover rounded-lg mx-auto"
+                        alt="Compact">
 
-                    <h3>Compact Powder</h3>
+                    <h3 class="text-xl font-semibold mt-4">Compact Powder</h3>
 
-                    <p><strong>₹699</strong></p>
+                    <p class="font-bold text-pink-600 mt-2">₹699</p>
 
-                    <button>Add to Cart</button>
+                    <button class="bg-pink-600 hover:bg-pink-700 text-white px-5 py-2 rounded-lg mt-3">
+                        Add to Cart
+                    </button>
 
                 </td>
 
-                <td align="center">
+                <td class="bg-white rounded-xl shadow-lg p-5 text-center">
 
                     <img src="images/cleanser.jpg"
-                         width="180"
-                         height="180"
-                         alt="Cleanser">
+                        class="w-44 h-44 object-cover rounded-lg mx-auto"
+                        alt="Cleanser">
 
-                    <h3>Face Cleanser</h3>
+                    <h3 class="text-xl font-semibold mt-4">Face Cleanser</h3>
 
-                    <p><strong>₹649</strong></p>
+                    <p class="font-bold text-pink-600 mt-2">₹649</p>
 
-                    <button>Add to Cart</button>
+                    <button class="bg-pink-600 hover:bg-pink-700 text-white px-5 py-2 rounded-lg mt-3">
+                        Add to Cart
+                    </button>
 
                 </td>
 
@@ -259,17 +285,27 @@
 
     <hr>
 
-   <footer>
+    <footer class="bg-black text-white text-center py-8 ">
 
-        <h3>Hikari's Luxe - Cosmetics World</h3>
+        <h3 class="text-3xl font-bold">
+            Hikari's Luxe - Cosmetics World
+        </h3>
 
-        <p>Your destination for premium beauty and skincare products.</p>
+        <p class="mt-3">
+            Your destination for premium beauty and skincare products.
+        </p>
 
-        <p>support@hikarisluxe.com</p>
+        <p class="mt-2">
+            support@hikarisluxe.com
+        </p>
 
-        <p>+91 98765 43210</p>
+        <p>
+            +91 98765 43210
+        </p>
 
-        <p>&copy; 2026 Hikari's Luxe. All Rights Reserved.</p>
+        <p class="mt-4 text-gray-400">
+            © 2026 Hikari's Luxe. All Rights Reserved.
+        </p>
 
     </footer>
 

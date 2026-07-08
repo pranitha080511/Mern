@@ -1,38 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About - Hikari's Luxe</title>
+
+    <link rel="stylesheet" href="dist/output.css">
 </head>
 
-<body>
+<body class="bg-pink-50 text-gray-800">
 
-      <header>
+     <header class="bg-black p-5">
 
-        <table width="100%">
+        <table class="w-full">
 
             <tr>
 
-                <td width="25%">
+                <td class="w-1/4"></td>
+
+                <td class="w-1/2 text-center">
+
+                    <h1 class="text-4xl font-bold text-white font-serif">
+                        Hikari's Luxe
+                    </h1>
+
+                    <h2 class="text-xl text-white font-serif">
+                        Cosmetics World
+                    </h2>
+
                 </td>
 
-                <td width="50%" align="center">
-
-                    <h1>Hikari's Luxe</h1>
-
-                    <h2>Cosmetics World</h2>
-
-                </td>
-
-                <td width="25%" align="right">
+                <td class="w-1/4 text-right">
 
                     <a href="login.html">
-                        <button>Login</button>
+                        <button class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-full">
+                            Login
+                        </button>
                     </a>
 
                     <a href="signup.html">
-                        <button>Sign Up</button>
+                        <button class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-full">
+                            Sign Up
+                        </button>
                     </a>
 
                 </td>
@@ -41,24 +51,29 @@
 
         </table>
 
-        <nav align="center">
+        <nav class="text-center mt-5 text-white font-semibold space-x-3">
 
-            <a href="index.html">Home</a> |
-            <a href="about.html">About</a> |
-            <a href="product.html">Products</a> |
-            <a href="profile.html">Profile</a>
+            <a href="index.html" class="hover:text-red-500">Home</a> |
+
+            <a href="about.html" class="hover:text-red-500">About</a> |
+
+            <a href="product.html" class="hover:text-red-500">Products</a> |
+
+            <a href="profile.html" class="hover:text-red-500">Profile</a>
 
         </nav>
 
     </header>
 
-    <hr>
+    <hr class="my-6">
 
-    <section>
+    <section class="max-w-5xl mx-auto text-center py-10">
 
-        <h2>About Us</h2>
+        <h2 class="text-4xl font-bold text-pink-700 mb-6">
+            About Us
+        </h2>
 
-        <p>
+        <p class="text-lg leading-8 text-gray-700 mb-8">
             Hikari's Luxe is a premium cosmetics brand dedicated to helping
             everyone feel confident and beautiful. We offer high-quality
             skincare, makeup, fragrances, and beauty essentials at affordable
@@ -67,21 +82,25 @@
 
         <img src="images/about.jpg"
              alt="About Hikari's Luxe"
-             width="100"
-             height="100">
+             class="w-80 h-80 object-cover rounded-xl shadow-lg mx-auto">
 
     </section>
 
-    <hr>
+    <hr class="my-6">
 
-    <section>
+    <section class="max-w-5xl mx-auto py-10">
 
-        <h2>Our Story</h2>
+        <h2 class="text-3xl font-bold text-pink-700 mb-6 text-center">
+            Our Story
+        </h2>
 
-        <details>
-            <summary><strong>Read Our Story</strong></summary>
+        <details class="bg-white p-6 rounded-xl shadow">
 
-            <p>
+            <summary class="font-bold text-lg cursor-pointer">
+                Read Our Story
+            </summary>
+
+            <p class="mt-4 leading-8 text-gray-700">
                 Hikari's Luxe was founded with a vision to provide safe,
                 high-quality beauty products for every skin type.
                 Our goal is to combine innovation, elegance, and affordability
@@ -92,16 +111,21 @@
 
     </section>
 
-    <hr>
+    <hr class="my-6">
 
-    <section>
+    <section class="max-w-5xl mx-auto py-10">
 
-        <h2>Mission & Vision</h2>
+        <h2 class="text-3xl font-bold text-pink-700 mb-6 text-center">
+            Mission & Vision
+        </h2>
 
-        <details>
-            <summary><strong>Our Mission</strong></summary>
+        <details class="bg-white p-6 rounded-xl shadow">
 
-            <p>
+            <summary class="font-bold text-lg cursor-pointer">
+                Our Mission
+            </summary>
+
+            <p class="mt-4 leading-8 text-gray-700">
                 To inspire confidence by offering premium beauty products
                 made with quality ingredients and modern innovation.
             </p>
@@ -110,10 +134,13 @@
 
         <br>
 
-        <details>
-            <summary><strong>Our Vision</strong></summary>
+        <details class="bg-white p-6 rounded-xl shadow">
 
-            <p>
+            <summary class="font-bold text-lg cursor-pointer">
+                Our Vision
+            </summary>
+
+            <p class="mt-4 leading-8 text-gray-700">
                 To become one of the world's most trusted cosmetics brands,
                 known for excellence, sustainability, and customer satisfaction.
             </p>
@@ -122,59 +149,87 @@
 
     </section>
 
-    <hr>
+    <hr class="my-6">
 
-    <section>
+    <section class="max-w-5xl mx-auto py-10 text-center">
 
-        <h2>Watch Our Brand Video</h2>
+        <h2 class="text-3xl font-bold text-pink-700 mb-8">
+            Watch Our Brand Video
+        </h2>
 
-        <video width="600" controls><source src="videos/brand.mp4" type="video/mp4"></video>
+        <video class="w-full max-w-3xl rounded-xl shadow-lg mx-auto" controls>
+            <source src="videos/brand.mp4" type="video/mp4">
+        </video>
 
     </section>
 
-    <hr>
+    <hr class="my-6">
 
-    <section>
+    <section class="max-w-5xl mx-auto py-10">
 
-        <h2>Why Customers Love Us</h2>
+        <h2 class="text-3xl font-bold text-pink-700 mb-6 text-center">
+            Why Customers Love Us
+        </h2>
 
-        <ul>
+        <ul class="list-disc list-inside text-lg leading-10 text-gray-700">
+
             <li>Premium Quality Products</li>
+
             <li>Natural Ingredients</li>
+
             <li>Cruelty-Free Beauty</li>
+
             <li>Affordable Prices</li>
+
             <li>Trusted by Thousands of Customers</li>
+
         </ul>
 
     </section>
 
-    <hr>
+    <hr class="my-6">
 
-    <section>
+    <section class="max-w-5xl mx-auto py-10">
 
-        <h2>Contact Us</h2>
+        <h2 class="text-3xl font-bold text-pink-700 mb-6 text-center">
+            Contact Us
+        </h2>
 
-        <p><strong>Email:</strong> support@hikarisluxe.com</p>
+        <div class="bg-white p-8 rounded-xl shadow text-lg leading-9">
 
-        <p><strong>Phone:</strong> +91 98765 43210</p>
+            <p><strong>Email:</strong> support@hikarisluxe.com</p>
 
-        <p><strong>Location:</strong> Madurai, Tamil Nadu, India</p>
+            <p><strong>Phone:</strong> +91 98765 43210</p>
+
+            <p><strong>Location:</strong> Madurai, Tamil Nadu, India</p>
+
+        </div>
 
     </section>
 
-    <hr>
+    <hr class="my-6">
 
-   <footer>
+    <footer class="bg-black text-white text-center py-8 ">
 
-        <h3>Hikari's Luxe - Cosmetics World</h3>
+        <h3 class="text-3xl font-bold">
+            Hikari's Luxe - Cosmetics World
+        </h3>
 
-        <p>Your destination for premium beauty and skincare products.</p>
+        <p class="mt-3">
+            Your destination for premium beauty and skincare products.
+        </p>
 
-        <p>support@hikarisluxe.com</p>
+        <p class="mt-2">
+            support@hikarisluxe.com
+        </p>
 
-        <p>+91 98765 43210</p>
+        <p>
+            +91 98765 43210
+        </p>
 
-        <p>&copy; 2026 Hikari's Luxe. All Rights Reserved.</p>
+        <p class="mt-4 text-gray-400">
+            © 2026 Hikari's Luxe. All Rights Reserved.
+        </p>
 
     </footer>
 

@@ -6,11 +6,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up - Hikari's Luxe</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .error-input {
+            border-color: #ef4444 !important;
+        }
+
+        .error-text {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+    </style>
 </head>
 
 <body class="bg-pink-50">
 
-    <section class="flex justify-center items-center min-h-screen">
+    <section class="flex justify-center items-center min-h-screen px-4 py-8">
 
         <div class="bg-white shadow-xl rounded-xl p-8 w-full max-w-lg">
 
@@ -18,36 +29,49 @@
                 Create Account
             </h2>
 
-            <form>
+            <form id="signupForm" novalidate>
+                <p id="formError" class="hidden mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-600"></p>
 
-                <label class="font-semibold">Full Name</label><br>
+                <label class="font-semibold" for="fullName">Full Name</label><br>
                 <input
+                    id="fullName"
+                    name="fullName"
                     type="text"
                     placeholder="Enter your full name"
                     class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-pink-500">
+                <div id="fullNameError" class="error-text hidden"></div>
 
                 <br><br>
 
-                <label class="font-semibold">Email</label><br>
+                <label class="font-semibold" for="email">Email</label><br>
                 <input
+                    id="email"
+                    name="email"
                     type="email"
                     placeholder="Enter your email"
                     class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-pink-500">
+                <div id="emailError" class="error-text hidden"></div>
 
                 <br><br>
 
-                <label class="font-semibold">Phone Number</label><br>
+                <label class="font-semibold" for="phone">Phone Number</label><br>
                 <input
+                    id="phone"
+                    name="phone"
                     type="tel"
                     placeholder="Enter your phone number"
                     class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-pink-500">
+                <div id="phoneError" class="error-text hidden"></div>
 
                 <br><br>
 
-                <label class="font-semibold">Date of Birth</label><br>
+                <label class="font-semibold" for="dob">Date of Birth</label><br>
                 <input
+                    id="dob"
+                    name="dob"
                     type="date"
                     class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-pink-500">
+                <div id="dobError" class="error-text hidden"></div>
 
                 <br><br>
 
@@ -55,63 +79,74 @@
 
                 <div class="mt-2 space-x-4">
                     <label>
-                        <input type="radio" name="gender" class="accent-pink-600">
+                        <input type="radio" name="gender" value="Male" class="accent-pink-600">
                         Male
                     </label>
 
                     <label>
-                        <input type="radio" name="gender" class="accent-pink-600">
+                        <input type="radio" name="gender" value="Female" class="accent-pink-600">
                         Female
                     </label>
 
                     <label>
-                        <input type="radio" name="gender" class="accent-pink-600">
+                        <input type="radio" name="gender" value="Other" class="accent-pink-600">
                         Other
                     </label>
                 </div>
+                <div id="genderError" class="error-text hidden"></div>
 
                 <br>
 
-                <label class="font-semibold">Password</label><br>
+                <label class="font-semibold" for="password">Password</label><br>
                 <input
+                    id="password"
+                    name="password"
                     type="password"
                     placeholder="Enter password"
                     class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-pink-500">
+                <div id="passwordError" class="error-text hidden"></div>
 
                 <br><br>
 
-                <label class="font-semibold">Confirm Password</label><br>
+                <label class="font-semibold" for="confirmPassword">Confirm Password</label><br>
                 <input
+                    id="confirmPassword"
+                    name="confirmPassword"
                     type="password"
                     placeholder="Confirm password"
                     class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-pink-500">
+                <div id="confirmPasswordError" class="error-text hidden"></div>
 
                 <br><br>
 
-                <label class="font-semibold">Select Skin Type</label><br>
+                <label class="font-semibold" for="skinType">Select Skin Type</label><br>
 
                 <select
+                    id="skinType"
+                    name="skinType"
                     class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-pink-500">
-
-                    <option>Dry</option>
-                    <option>Oily</option>
-                    <option>Combination</option>
-                    <option>Normal</option>
-
+                    <option value="">Choose your skin type</option>
+                    <option value="Dry">Dry</option>
+                    <option value="Oily">Oily</option>
+                    <option value="Combination">Combination</option>
+                    <option value="Normal">Normal</option>
                 </select>
+                <div id="skinTypeError" class="error-text hidden"></div>
 
                 <br><br>
 
                 <label class="flex items-center gap-2">
-                    <input type="checkbox" class="accent-pink-600">
+                    <input id="terms" name="terms" type="checkbox" class="accent-pink-600">
                     I agree to the Terms & Conditions
                 </label>
+                <div id="termsError" class="error-text hidden"></div>
 
                 <br>
 
                 <div class="flex justify-center gap-4">
 
                     <button
+                        type="submit"
                         class="bg-pink-600 hover:bg-pink-700 text-white px-6 py-3 rounded-lg transition">
                         Create Account
                     </button>
@@ -129,6 +164,141 @@
         </div>
 
     </section>
+
+    <script>
+        const form = document.getElementById('signupForm');
+        const formError = document.getElementById('formError');
+
+        const fieldConfig = [
+            { input: document.getElementById('fullName'), error: document.getElementById('fullNameError') },
+            { input: document.getElementById('email'), error: document.getElementById('emailError') },
+            { input: document.getElementById('phone'), error: document.getElementById('phoneError') },
+            { input: document.getElementById('dob'), error: document.getElementById('dobError') },
+            { input: document.getElementById('password'), error: document.getElementById('passwordError') },
+            { input: document.getElementById('confirmPassword'), error: document.getElementById('confirmPasswordError') },
+            { input: document.getElementById('skinType'), error: document.getElementById('skinTypeError') }
+        ];
+
+        function clearErrors() {
+            formError.classList.add('hidden');
+            formError.textContent = '';
+
+            fieldConfig.forEach(({ input, error }) => {
+                input.classList.remove('error-input');
+                error.classList.add('hidden');
+                error.textContent = '';
+            });
+
+            document.getElementById('termsError').classList.add('hidden');
+            document.getElementById('termsError').textContent = '';
+            document.getElementById('genderError').classList.add('hidden');
+            document.getElementById('genderError').textContent = '';
+        }
+
+        function showError(input, errorElement, message) {
+            input.classList.add('error-input');
+            errorElement.textContent = message;
+            errorElement.classList.remove('hidden');
+        }
+
+        function validateForm() {
+            clearErrors();
+            let isValid = true;
+
+            const fullName = document.getElementById('fullName').value.trim();
+            if (!fullName) {
+                showError(document.getElementById('fullName'), document.getElementById('fullNameError'), 'Full name is required.');
+                isValid = false;
+            }
+
+            const email = document.getElementById('email').value.trim();
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email) {
+                showError(document.getElementById('email'), document.getElementById('emailError'), 'Email is required.');
+                isValid = false;
+            } else if (!emailPattern.test(email)) {
+                showError(document.getElementById('email'), document.getElementById('emailError'), 'Please enter a valid email address.');
+                isValid = false;
+            }
+
+            const phone = document.getElementById('phone').value.trim();
+            const phonePattern = /^\+?[0-9\s()-]{7,15}$/;
+            if (!phone) {
+                showError(document.getElementById('phone'), document.getElementById('phoneError'), 'Phone number is required.');
+                isValid = false;
+            } else if (!phonePattern.test(phone)) {
+                showError(document.getElementById('phone'), document.getElementById('phoneError'), 'Please enter a valid phone number.');
+                isValid = false;
+            }
+
+            const dob = document.getElementById('dob').value;
+            if (!dob) {
+                showError(document.getElementById('dob'), document.getElementById('dobError'), 'Date of birth is required.');
+                isValid = false;
+            }
+
+            const selectedGender = document.querySelector('input[name="gender"]:checked');
+            if (!selectedGender) {
+                const genderError = document.getElementById('genderError');
+                genderError.textContent = 'Please select your gender.';
+                genderError.classList.remove('hidden');
+                isValid = false;
+            }
+
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            if (!password) {
+                showError(document.getElementById('password'), document.getElementById('passwordError'), 'Password is required.');
+                isValid = false;
+            } else if (password.length < 8) {
+                showError(document.getElementById('password'), document.getElementById('passwordError'), 'Password must be at least 8 characters long.');
+                isValid = false;
+            }
+
+            if (!confirmPassword) {
+                showError(document.getElementById('confirmPassword'), document.getElementById('confirmPasswordError'), 'Please confirm your password.');
+                isValid = false;
+            } else if (password && confirmPassword && password !== confirmPassword) {
+                showError(document.getElementById('confirmPassword'), document.getElementById('confirmPasswordError'), 'Passwords do not match.');
+                isValid = false;
+            }
+
+            const skinType = document.getElementById('skinType').value;
+            if (!skinType) {
+                showError(document.getElementById('skinType'), document.getElementById('skinTypeError'), 'Please select a skin type.');
+                isValid = false;
+            }
+
+            const termsChecked = document.getElementById('terms').checked;
+            if (!termsChecked) {
+                const termsError = document.getElementById('termsError');
+                termsError.textContent = 'You must agree to the Terms & Conditions.';
+                termsError.classList.remove('hidden');
+                isValid = false;
+            }
+
+            if (!isValid) {
+                formError.textContent = 'Please correct the highlighted fields.';
+                formError.classList.remove('hidden');
+                formError.classList.remove('bg-green-50', 'text-green-600');
+                formError.classList.add('bg-red-50', 'text-red-600');
+                return false;
+            }
+
+            formError.textContent = 'Form submitted successfully!';
+            formError.classList.remove('hidden');
+            formError.classList.remove('bg-red-50', 'text-red-600');
+            formError.classList.add('bg-green-50', 'text-green-600');
+            alert('Form submitted successfully!');
+            form.reset();
+            return true;
+        }
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            validateForm();
+        });
+    </script>
 
 </body>
 

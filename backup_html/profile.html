@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile - Hikari's Luxe</title>
+
+    <link rel="stylesheet" href="dist/output.css">
+</head>
+
+<body class="bg-pink-50 text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-black shadow-lg">
+
+        <div class="max-w-7xl mx-auto px-8 py-5">
+
+            <div class="flex justify-between items-center">
+
+                <div class="w-1/4"></div>
+
+                <div class="w-1/2 text-center">
+
+                    <h1 class="text-4xl font-bold text-white font-serif">
+                        Hikari's Luxe
+                    </h1>
+
+                    <h2 class="text-xl text-white font-serif">
+                        Cosmetics World
+                    </h2>
+
+                </div>
+
+                <div class="w-1/4 flex justify-end space-x-3">
+
+                    <a href="login.html">
+                        <button class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-full transition">
+                            Login
+                        </button>
+                    </a>
+
+                    <a href="signup.html">
+                        <button class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-full transition">
+                            Sign Up
+                        </button>
+                    </a>
+
+                </div>
+
+            </div>
+
+            <nav class="text-center mt-6 text-white font-semibold space-x-4">
+
+                <a href="index.html" class="hover:text-red-500">Home</a> |
+
+                <a href="about.html" class="hover:text-red-500">About</a> |
+
+                <a href="product.html" class="hover:text-red-500">Products</a> |
+
+                <a href="profile.html" class="text-red-500">
+                    Profile
+                </a>
+
+            </nav>
+
+        </div>
+
+    </header>
+    <section class="bg-gradient-to-r from-pink-400 to-purple-500 py-16">
+
+        <div class="text-center">
+
+            <h2 class="text-4xl font-bold text-white mt-6">
+                Welcome Back, Priya Sharma
+            </h2>
+
+            <p class="text-white text-lg mt-3">
+                Manage your account, orders, wishlist and beauty preferences.
+            </p>
+
+        </div>
+
+    </section>
+
+
+
+    <section class="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl border border-pink-200 p-10 mt-10">
+
+        <h2 class="text-3xl font-bold text-gray-800 border-l-4 border-pink-500 pl-4 mb-8">
+
+            My Profile
+
+        </h2>
+
+        <div class="grid md:grid-cols-2 gap-x-10 gap-y-5 text-lg">
+
+            <p class="flex"><strong class="w-40 shrink-0">Name</strong><span>: Priya Sharma</span></p>
+
+            <p class="flex"><strong class="w-40 shrink-0">Email</strong><span>: priyasharma@gmail.com</span></p>
+
+            <p class="flex"><strong class="w-40 shrink-0">Phone</strong><span>: +91 98765 43210</span></p>
+
+            <p class="flex"><strong class="w-40 shrink-0">Gender</strong><span>: Female</span></p>
+
+            <p class="flex"><strong class="w-40 shrink-0">Date of Birth</strong><span>: 15 August 2002</span></p>
+
+            <p class="flex"><strong class="w-40 shrink-0">Address</strong><span>: Madurai, Tamil Nadu</span></p>
+
+        </div>
+
+    </section>
+
+    <section class="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl border border-pink-200 p-10 mt-10">
+
+        <h2 class="text-3xl font-bold text-gray-800 border-l-4 border-pink-500 pl-4 mb-8">
+
+            Beauty Preferences
+
+        </h2>
+
+        <div class="grid md:grid-cols-2 gap-5 text-lg">
+
+            <div class="bg-pink-50 rounded-xl p-5 shadow text-center">
+
+                <h3 class="font-bold text-pink-600">
+                    Skin Type
+                </h3>
+
+                <p class="mt-2">
+                    Combination
+                </p>
+
+            </div>
+
+            <div class="bg-pink-50 rounded-xl p-5 shadow text-center">
+
+                <h3 class="font-bold text-pink-600">
+                    Favorite Category
+                </h3>
+
+                <p class="mt-2">
+                    Skincare
+                </p>
+
+            </div>
+
+            <div class="bg-pink-50 rounded-xl p-5 shadow text-center">
+
+                <h3 class="font-bold text-pink-600">
+                    Favorite Product
+                </h3>
+
+                <p class="mt-2">
+                    Vitamin C Serum
+                </p>
+
+            </div>
+
+            <div class="bg-pink-50 rounded-xl p-5 shadow text-center">
+
+                <h3 class="font-bold text-pink-600">
+                    Favorite Brand
+                </h3>
+
+                <p class="mt-2">
+                    Hikari's Luxe
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <section class="max-w-6xl mx-auto bg-white rounded-2xl shadow-xl border border-pink-200 p-10 mt-10">
+
+        <h2 class="text-3xl font-bold text-gray-800 border-l-4 border-pink-500 pl-4 mb-8">
+
+            Order History
+
+        </h2>
+
+        <div class="overflow-x-auto">
+
+            <table class="w-full border border-gray-300 text-center">
+
+                <thead>
+
+                    <tr class="bg-black text-white">
+
+                        <th class="p-4 border">Order ID</th>
+
+                        <th class="p-4 border">Product</th>
+
+                        <th class="p-4 border">Price</th>
+
+                        <th class="p-4 border">Status</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr class="bg-pink-50 hover:bg-pink-100">
+
+                        <td class="border p-4">1001</td>
+
+                        <td class="border p-4">Matte Lipstick</td>
+
+                        <td class="border p-4">₹799</td>
+
+                        <td class="border p-4">
+
+                            <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full font-semibold inline-block">
+
+                                Delivered
+
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                    <tr class="hover:bg-pink-100">
+
+                        <td class="border p-4">1002</td>
+
+                        <td class="border p-4">Vitamin C Serum</td>
+
+                        <td class="border p-4">₹999</td>
+
+                        <td class="border p-4">
+
+                            <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-semibold inline-block">
+
+                                Shipped
+
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                    <tr class="bg-pink-50 hover:bg-pink-100">
+
+                        <td class="border p-4">1003</td>
+
+                        <td class="border p-4">Hydrating Face Cream</td>
+
+                        <td class="border p-4">₹699</td>
+
+                        <td class="border p-4">
+
+                            <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full font-semibold inline-block">
+
+                                Processing
+
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+ 
+
+    <section class="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl border border-pink-200 p-10 mt-10">
+
+        <h2 class="text-3xl font-bold text-gray-800 border-l-4 border-pink-500 pl-4 mb-8">
+
+            Wishlist
+
+        </h2>
+
+        <div class="grid md:grid-cols-2 gap-6">
+
+            <div class="bg-pink-50 rounded-xl p-5 shadow text-center">
+                Luxury Perfume
+            </div>
+
+            <div class="bg-pink-50 rounded-xl p-5 shadow text-center">
+                Face Cleanser
+            </div>
+
+            <div class="bg-pink-50 rounded-xl p-5 shadow text-center">
+                Nail Polish Set
+            </div>
+
+            <div class="bg-pink-50 rounded-xl p-5 shadow text-center">
+                Sunscreen SPF 50
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- Saved Address -->
+
+    <section class="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl border border-pink-200 p-10 mt-10">
+
+        <h2 class="text-3xl font-bold text-gray-800 border-l-4 border-pink-500 pl-4 mb-8">
+
+            Saved Address
+
+        </h2>
+
+        <div class="bg-pink-50 rounded-xl shadow p-6 text-center">
+
+            <p class="text-lg leading-8">
+
+                24, Anna Nagar,<br>
+
+                Madurai,<br>
+
+                Tamil Nadu - 625020
+
+            </p>
+
+        </div>
+
+    </section>
+
+    <!-- Account Settings -->
+
+    <section class="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl border border-pink-200 p-10 mt-10 text-center">
+
+        <h2 class="text-3xl font-bold text-gray-800 border-l-4 border-pink-500 pl-4 inline-block mb-10">
+
+            Account Settings
+
+        </h2>
+
+        <div class="flex flex-wrap justify-center gap-5">
+
+            <button
+                class="bg-pink-600 hover:bg-pink-700 text-white px-8 py-3 rounded-full transition duration-300 shadow-lg">
+
+                Edit Profile
+
+            </button>
+
+            <button
+                class="bg-black hover:bg-gray-800 text-white px-8 py-3 rounded-full transition duration-300 shadow-lg">
+
+                Change Password
+
+            </button>
+
+            <button
+                class="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-full transition duration-300 shadow-lg">
+
+                Logout
+
+            </button>
+
+        </div>
+
+    </section>
+
+    <!-- Need Help -->
+
+    <section class="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl border border-pink-200 p-10 mt-10 mb-10">
+
+        <h2 class="text-3xl font-bold text-gray-800 border-l-4 border-pink-500 pl-4 mb-8">
+
+            Need Help?
+
+        </h2>
+
+        <details class="bg-pink-50 border border-pink-200 rounded-xl p-6 shadow">
+
+            <summary class="font-semibold text-lg cursor-pointer hover:text-pink-600">
+
+                Customer Support
+
+            </summary>
+
+            <div class="mt-5 space-y-3 text-lg">
+
+                <p>
+                    <strong>Email :</strong>
+                    support@hikarisluxe.com
+                </p>
+
+                <p>
+                    <strong>Phone :</strong>
+                    +91 98765 43210
+                </p>
+
+                <p>
+                    Our customer support team is available Monday to Saturday,
+                    from 9:00 AM to 7:00 PM.
+                </p>
+
+            </div>
+
+        </details>
+
+    </section>
+
+    <!-- Footer -->
+
+    <footer class="bg-black text-white text-center py-10 mt-12">
+
+        <h3 class="text-3xl font-bold font-serif">
+
+            Hikari's Luxe - Cosmetics World
+
+        </h3>
+
+        <p class="mt-4 text-gray-300">
+
+            Your destination for premium beauty and skincare products.
+
+        </p>
+
+        <p class="mt-2">
+
+            support@hikarisluxe.com
+
+        </p>
+
+        <p>
+
+            +91 98765 43210
+
+        </p>
+
+        <div class="flex justify-center space-x-8 mt-6 text-gray-300">
+
+            <a href="index.html" class="hover:text-pink-400 transition">
+
+                Home
+
+            </a>
+
+            <a href="about.html" class="hover:text-pink-400 transition">
+
+                About
+
+            </a>
+
+            <a href="product.html" class="hover:text-pink-400 transition">
+
+                Products
+
+            </a>
+
+            <a href="profile.html" class="hover:text-pink-400 transition">
+
+                Profile
+
+            </a>
+
+        </div>
+
+        <hr class="border-gray-700 my-6 w-3/4 mx-auto">
+
+        <p class="text-gray-400">
+
+            © 2026 Hikari's Luxe. All Rights Reserved.
+
+        </p>
+
+    </footer>
+
+</body>
+
+</html>

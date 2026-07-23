@@ -165,11 +165,15 @@ export default function Products({ addToCart, user, token }) {
               >
                 {/* Image */}
                 <div className="relative h-60 w-full bg-pink-50/30 overflow-hidden">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                  />
+                 <img
+  src={`${import.meta.env.VITE_API_URL}/${product.image}`}
+  alt={product.name}
+  className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+  onError={(e) => {
+    e.target.onerror = null;
+    e.target.src = "https://placehold.co/400x400?text=No+Image";
+  }}
+/>
                   {/* Category badge */}
                   <span className="absolute top-3 left-3 bg-black/60 backdrop-blur-md text-white text-xxs font-bold uppercase tracking-widest px-2.5 py-1 rounded-full">
                     {product.category}

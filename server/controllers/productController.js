@@ -87,7 +87,7 @@ export const createProduct = async (req, res) => {
       const emails = users.map(u => u.email).filter(Boolean);
       if (emails.length > 0) {
         console.log(`📧 Sending new launch notification email to ${emails.length} user(s)...`);
-        sendNewProductEmail(createdProduct, emails);
+        await sendNewProductEmail(createdProduct, emails);
       }
     } catch (emailErr) {
       console.error('Error sending new product launch email:', emailErr);

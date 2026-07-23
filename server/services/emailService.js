@@ -12,8 +12,11 @@ export const sendFeedbackEmail = async ({ userName, userEmail, orderId, rating, 
   }
 
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false, // STARTTLS
     auth: { user: emailUser, pass: emailPass },
+    tls: { rejectUnauthorized: false },
   });
 
   const stars = '★'.repeat(rating) + '☆'.repeat(5 - rating);
@@ -87,8 +90,11 @@ export const sendNewProductEmail = async (product, emails) => {
   }
 
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false, // STARTTLS
     auth: { user: emailUser, pass: emailPass },
+    tls: { rejectUnauthorized: false },
   });
 
   const attachments = [];
@@ -148,6 +154,7 @@ export const sendNewProductEmail = async (product, emails) => {
 
   const mailOptions = {
     from: `"Hikari's Luxe" <${emailUser}>`,
+    to: emailUser,
     bcc: emails,
     subject: `🌟 New Arrival: ${product.name}`,
     html: htmlContent,

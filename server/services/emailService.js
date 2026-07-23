@@ -71,3 +71,61 @@ export const sendFeedbackEmail = async ({ userName, userEmail, orderId, rating, 
     return { sent: false, reason: error.message };
   }
 };
+
+export const sendNewProductEmail = async (product, emails) => {
+  const emailUser = process.env.EMAIL_USER;
+  const emailPass = process.env.EMAIL_PASS;
+
+  if (!emailUser || !emailPass) {
+    console.log('⚠️ EMAIL_PASS not configured. Skipping new product email.');
+    return { sent: false, reason: 'Email credentials not configured' };
+  }
+
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: { user: emailUser, pass: emailPass },
+  });
+
+  const htmlContent = `
+    <div style="font-family: 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto; background: #1a1525; color: #f8f4f0; border-radius: 16px; overflow: hidden;">
+      <div style="background: linear-gradient(135deg, #be185d, #7c3aed); padding: 24px 32px;">
+        <h1 style="margin: 0; font-size: 22px; color: white;">🌸 New Product Launched!</h1>
+        <p style="margin: 4px 0 0; font-size: 13px; color: rgba(255,255,255,0.8);">Hikari's Luxe Cosmetics</p>
+      </div>
+      <div style="padding: 28px 32px;">
+        <p style="font-size: 16px; font-weight: 600; margin-bottom: 20px;">We just launched an amazing new product in our <strong>${product.category}</strong> collection!</p>
+        
+        <div style="background: rgba(255,255,255,0.06); border-radius: 12px; padding: 18px; margin-bottom: 20px; display: flex; gap: 16px; align-items: center;">
+          <div style="flex: 1;">
+            <p style="margin: 0; font-size: 18px; font-weight: 700;">${product.name}</p>
+            <p style="margin: 8px 0 0; font-size: 22px; color: #e8b4b8; font-weight: 800;">₹${product.price}</p>
+          </div>
+        </div>
+        
+        <p style="margin: 0; font-size: 14px; line-height: 1.6; color: rgba(248,244,240,0.8);">
+          Check it out on our website and add it to your collection today!
+        </p>
+      </div>
+      <div style="padding: 16px 32px; background: rgba(0,0,0,0.3); text-align: center; font-size: 12px; color: rgba(248,244,240,0.4);">
+        Hikari's Luxe
+      </div>
+    </div>
+  `;
+
+  const mailOptions = {
+    from: `"Hikari's Luxe" <${emailUser}>`,
+    bcc: emails,
+    subject: `🌟 New Arrival: ${product.name}`,
+    html: htmlContent,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`✅ New product email sent to ${emails.length} users`);
+    return { sent: true };
+  } catch (error) {
+    console.error('❌ Failed to send new product email:', error.message);
+    return { sent: false, reason: error.message };
+  }
+};
+

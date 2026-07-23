@@ -317,6 +317,12 @@ export default function AdminPortal({ user, onLogout }) {
   const [loading, setLoading] = useState(true);
   const [usersLoading, setUsersLoading] = useState(false);
 
+  const [products, setProducts] = useState([]);
+  const [productsLoading, setProductsLoading] = useState(false);
+  const [showProductModal, setShowProductModal] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [productForm, setProductForm] = useState({ name: '', price: '', image: '', category: 'Skincare', inStock: true });
+
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
@@ -357,6 +363,40 @@ export default function AdminPortal({ user, onLogout }) {
   useEffect(() => { fetchOrders(); }, [fetchOrders]);
   useEffect(() => { if (activeTab === 'users') fetchUsers(); }, [activeTab, fetchUsers]);
 
+  const fetchProducts = useCallback(async () => {
+    setProductsLoading(true);
+    try { setProducts(await api.get('/api/products')); }
+    catch (e) { console.error(e); } finally { setProductsLoading(false); }
+  }, []);
+
+  useEffect(() => { if (activeTab === 'products') fetchProducts(); }, [activeTab, fetchProducts]);
+
+  const handleSaveProduct = async (e) => {
+    e.preventDefault();
+    try {
+      if (editingProduct) {
+        await api.put(`/api/products/${editingProduct.id}`, productForm);
+      } else {
+        await api.post('/api/products', productForm);
+      }
+      setShowProductModal(false);
+      fetchProducts();
+    } catch (err) {
+      alert('Error saving product: ' + (err.response?.data?.message || err.message));
+    }
+  };
+
+  const handleDeleteProduct = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this product?')) return;
+    try {
+      await api.delete(`/api/products/${id}`);
+      fetchProducts();
+    } catch (err) {
+      console.error(err);
+      alert('Error deleting product');
+    }
+  };
+
   const fetchFeedbacks = useCallback(async () => {
     setFeedbackLoading(true);
     try { setFeedbacks(await api.get('/api/feedback/all')); }
@@ -381,6 +421,7 @@ export default function AdminPortal({ user, onLogout }) {
 
   const NAV = [
     { id: 'orders',   icon: '📋', label: 'Orders'     },
+    { id: 'products', icon: '🛍️', label: 'Products'   },
     { id: 'users',    icon: '👥', label: 'Customers'  },
     { id: 'feedback', icon: '💬', label: 'Feedback'   },
   ];
@@ -601,6 +642,85 @@ export default function AdminPortal({ user, onLogout }) {
           </div>
         )}
 
+        {/* ════ PRODUCTS TAB ════ */}
+        {activeTab === 'products' && (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 18 }}>
+              <button onClick={() => {
+                setEditingProduct(null);
+                setProductForm({ name: '', price: '', image: '', category: 'Skincare', inStock: true });
+                setShowProductModal(true);
+              }} style={{
+                background: 'linear-gradient(135deg, #e8b4b8, #c97a85)',
+                color: '#1a0f10', border: 'none', padding: '10px 20px', borderRadius: 8,
+                fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+              }}>+ Add Product</button>
+            </div>
+            
+            <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, overflow: 'hidden' }}>
+              <div style={{
+                display: 'grid', gridTemplateColumns: '80px 1fr 120px 120px 100px 100px',
+                background: 'rgba(0,0,0,0.2)', padding: '14px 24px',
+                fontSize: 12, fontWeight: 700, color: 'rgba(248,244,240,0.4)', textTransform: 'uppercase', letterSpacing: 1,
+                borderBottom: '1px solid rgba(255,255,255,0.08)',
+              }}>
+                <span>Image</span>
+                <span>Name</span>
+                <span>Category</span>
+                <span>Price</span>
+                <span>Status</span>
+                <span style={{ textAlign: 'right' }}>Actions</span>
+              </div>
+
+              {productsLoading ? (
+                <div style={{ textAlign: 'center', padding: 40, color: 'rgba(248,244,240,0.4)' }}>Loading products…</div>
+              ) : products.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: 40, color: 'rgba(248,244,240,0.4)' }}>No products found.</div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  {products.map((p, i) => (
+                    <div key={p.id} style={{
+                      display: 'grid', gridTemplateColumns: '80px 1fr 120px 120px 100px 100px',
+                      padding: '16px 24px', alignItems: 'center',
+                      borderBottom: i !== products.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none',
+                      transition: 'background 0.2s',
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <img src={p.image.startsWith('http') ? p.image : `${import.meta.env.VITE_API_URL}/${p.image}`} alt={p.name} style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 8 }} onError={e => { e.target.onerror = null; e.target.src = "https://placehold.co/400x400?text=No+Image"; }} />
+                      <div style={{ fontWeight: 600, fontSize: 14 }}>{p.name}</div>
+                      <div style={{ fontSize: 13, color: 'rgba(248,244,240,0.6)' }}>{p.category}</div>
+                      <div style={{ fontWeight: 700, color: '#e8b4b8' }}>₹{p.price}</div>
+                      <div>
+                        {p.inStock ? (
+                          <span style={{ color: '#10b981', background: 'rgba(16,185,129,0.1)', padding: '4px 8px', borderRadius: 12, fontSize: 11, fontWeight: 700 }}>In Stock</span>
+                        ) : (
+                          <span style={{ color: '#ef4444', background: 'rgba(239,68,68,0.1)', padding: '4px 8px', borderRadius: 12, fontSize: 11, fontWeight: 700 }}>Out of Stock</span>
+                        )}
+                      </div>
+                      <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+                        <button onClick={() => {
+                          setEditingProduct(p);
+                          setProductForm({ name: p.name, price: p.price, image: p.image, category: p.category, inStock: p.inStock });
+                          setShowProductModal(true);
+                        }} style={{
+                          background: 'rgba(59,130,246,0.15)', color: '#60a5fa', border: '1px solid rgba(59,130,246,0.3)',
+                          padding: '6px 12px', borderRadius: 6, cursor: 'pointer', fontSize: 12, fontWeight: 600,
+                        }}>Edit</button>
+                        <button onClick={() => handleDeleteProduct(p.id)} style={{
+                          background: 'rgba(239,68,68,0.15)', color: '#f87171', border: '1px solid rgba(239,68,68,0.3)',
+                          padding: '6px 12px', borderRadius: 6, cursor: 'pointer', fontSize: 12, fontWeight: 600,
+                        }}>Del</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* ════ CUSTOMERS TAB ════ */}
         {activeTab === 'users' && (
           <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, overflow: 'hidden' }}>
@@ -769,6 +889,85 @@ export default function AdminPortal({ user, onLogout }) {
           <img src={expandedPhoto} alt="Feedback" style={{ maxWidth: '90%', maxHeight: '85vh', borderRadius: 16, objectFit: 'contain' }} />
         </div>
       )}
+
+      {/* ════ PRODUCT MODAL (ADD / EDIT) ════ */}
+      {showProductModal && (
+        <div onClick={() => setShowProductModal(false)} style={{
+          position: 'fixed', inset: 0, zIndex: 1000,
+          background: 'rgba(10,8,20,0.8)', backdropFilter: 'blur(6px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20,
+        }}>
+          <div onClick={e => e.stopPropagation()} style={{
+            background: 'linear-gradient(135deg, #1a1525 0%, #0f0c1a 100%)',
+            border: '1px solid rgba(255,255,255,0.12)',
+            borderRadius: 20, padding: '32px',
+            maxWidth: 500, width: '100%', position: 'relative',
+          }}>
+            <button onClick={() => setShowProductModal(false)} style={{
+              position: 'absolute', top: 16, right: 16,
+              background: 'rgba(255,255,255,0.08)', border: 'none',
+              color: '#f8f4f0', borderRadius: '50%', width: 32, height: 32,
+              cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>✕</button>
+
+            <h2 style={{ margin: '0 0 24px', fontSize: 22, fontWeight: 700 }}>
+              {editingProduct ? 'Edit Product' : 'Add New Product'}
+            </h2>
+
+            <form onSubmit={handleSaveProduct} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'rgba(248,244,240,0.6)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 1 }}>Name</label>
+                <input required type="text" value={productForm.name} onChange={e => setProductForm({ ...productForm, name: e.target.value })} style={{
+                  width: '100%', padding: '12px 16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: 10, color: '#f8f4f0', fontSize: 14, outline: 'none', boxSizing: 'border-box'
+                }} placeholder="Product Name" />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'rgba(248,244,240,0.6)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 1 }}>Category</label>
+                  <select required value={productForm.category} onChange={e => setProductForm({ ...productForm, category: e.target.value })} style={{
+                    width: '100%', padding: '12px 16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: 10, color: '#f8f4f0', fontSize: 14, outline: 'none', boxSizing: 'border-box'
+                  }}>
+                    <option value="Skincare" style={{ color: '#000' }}>Skincare</option>
+                    <option value="Makeup" style={{ color: '#000' }}>Makeup</option>
+                    <option value="Fragrance" style={{ color: '#000' }}>Fragrance</option>
+                    <option value="Nail Care" style={{ color: '#000' }}>Nail Care</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'rgba(248,244,240,0.6)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 1 }}>Price (₹)</label>
+                  <input required type="number" min="0" value={productForm.price} onChange={e => setProductForm({ ...productForm, price: e.target.value })} style={{
+                    width: '100%', padding: '12px 16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: 10, color: '#f8f4f0', fontSize: 14, outline: 'none', boxSizing: 'border-box'
+                  }} placeholder="Price" />
+                </div>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'rgba(248,244,240,0.6)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 1 }}>Image URL / Path</label>
+                <input required type="text" value={productForm.image} onChange={e => setProductForm({ ...productForm, image: e.target.value })} style={{
+                  width: '100%', padding: '12px 16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: 10, color: '#f8f4f0', fontSize: 14, outline: 'none', boxSizing: 'border-box'
+                }} placeholder="images/lipstick.jpg or https://..." />
+              </div>
+              
+              {editingProduct && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 8 }}>
+                  <input type="checkbox" id="inStockCheck" checked={productForm.inStock} onChange={e => setProductForm({ ...productForm, inStock: e.target.checked })} style={{ width: 18, height: 18, cursor: 'pointer' }} />
+                  <label htmlFor="inStockCheck" style={{ fontSize: 14, cursor: 'pointer', userSelect: 'none' }}>Product is In Stock</label>
+                </div>
+              )}
+
+              <button type="submit" style={{
+                marginTop: 16, background: 'linear-gradient(135deg, #e8b4b8, #c97a85)',
+                color: '#1a0f10', border: 'none', padding: '14px', borderRadius: 10,
+                fontWeight: 700, fontSize: 15, cursor: 'pointer', transition: 'transform 0.2s',
+              }}>{editingProduct ? 'Update Product' : 'Create Product'}</button>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

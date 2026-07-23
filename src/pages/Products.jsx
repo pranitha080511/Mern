@@ -178,6 +178,15 @@ export default function Products({ addToCart, user, token }) {
                   <span className="absolute top-3 left-3 bg-black/60 backdrop-blur-md text-white text-xxs font-bold uppercase tracking-widest px-2.5 py-1 rounded-full">
                     {product.category}
                   </span>
+                  
+                  {/* Out of Stock badge overlay */}
+                  {!product.inStock && (
+                    <div className="absolute inset-0 bg-white/40 backdrop-blur-[2px] flex items-center justify-center z-10">
+                      <span className="bg-red-500/90 text-white font-bold text-sm px-4 py-1.5 rounded-full shadow-lg transform -rotate-12">
+                        Out of Stock
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Details */}
@@ -191,14 +200,18 @@ export default function Products({ addToCart, user, token }) {
                     {/* Add to Cart button */}
                     <button
                       onClick={() => handleAddToCart(product)}
-                      disabled={isJustAdded}
+                      disabled={isJustAdded || !product.inStock}
                       className={`flex-1 flex items-center justify-center gap-2 py-3 px-3 rounded-xl text-sm font-semibold shadow-md transition duration-200 ${
-                        isJustAdded
+                        !product.inStock 
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed shadow-none'
+                          : isJustAdded
                           ? 'bg-green-600 text-white shadow-green-600/20'
                           : 'bg-pink-600 hover:bg-pink-700 text-white shadow-pink-600/10'
                       }`}
                     >
-                      {isJustAdded ? (
+                      {!product.inStock ? (
+                        <span>Out of Stock</span>
+                      ) : isJustAdded ? (
                         <><Check size={15} /><span>Added!</span></>
                       ) : (
                         <><ShoppingCart size={15} /><span>Add to Cart</span></>

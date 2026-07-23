@@ -49,3 +49,95 @@ export const seedProducts = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+// @desc    Create new product
+// @route   POST /api/products
+// @access  Private/Admin
+export const createProduct = async (req, res) => {
+  try {
+    const { name, price, image, category } = req.body;
+    
+    if (!name || !price || !image || !category) {
+      return res.status(400).json({ message: 'Please provide all required fields' });
+    }
+
+    const id = Date.now(); // Generate numeric ID
+
+    const product = new Product({
+      id,
+      name,
+      price,
+      image,
+      category,
+      inStock: true
+    });
+
+    const createdProduct = await product.save();
+
+    // Send email to all users asynchronously
+    try {
+      const User = (await import('../models/User.js')).default;
+      const { sendNewProductEmail } = await import('../services/emailService.js');
+      const users = await User.find({}).select('email');
+      const emails = users.map(u => u.email);
+      if (emails.length > 0) {
+        sendNewProductEmail(createdProduct, emails);
+      }
+    } catch (emailErr) {
+      console.error('Error sending new product email:', emailErr);
+    }
+
+    return res.status(201).json(createdProduct);
+  } catch (error) {
+    console.error('Create product error:', error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Update product
+// @route   PUT /api/products/:id
+// @access  Private/Admin
+export const updateProduct = async (req, res) => {
+  try {
+    const { name, price, image, category, inStock } = req.body;
+    
+    const product = await Product.findOne({ id: Number(req.params.id) });
+
+    if (product) {
+      product.name = name || product.name;
+      product.price = price || product.price;
+      product.image = image || product.image;
+      product.category = category || product.category;
+      if (inStock !== undefined) {
+        product.inStock = inStock;
+      }
+
+      const updatedProduct = await product.save();
+      return res.json(updatedProduct);
+    } else {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+  } catch (error) {
+    console.error('Update product error:', error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Delete product
+// @route   DELETE /api/products/:id
+// @access  Private/Admin
+export const deleteProduct = async (req, res) => {
+  try {
+    const product = await Product.findOne({ id: Number(req.params.id) });
+
+    if (product) {
+      await Product.deleteOne({ id: Number(req.params.id) });
+      return res.json({ message: 'Product removed' });
+    } else {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+  } catch (error) {
+    console.error('Delete product error:', error);
+    return res.status(500).json({ message: error.message });
+  }
+};

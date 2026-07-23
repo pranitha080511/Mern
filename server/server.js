@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import connectDB from './config/db.js';
 
 // Route imports
@@ -10,6 +12,7 @@ import orderRoutes from './routes/orderRoutes.js';
 import wishlistRoutes from './routes/wishlistRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import feedbackRoutes from './routes/feedbackRoutes.js';
 
 // Load environment variables
 dotenv.config();
@@ -18,6 +21,9 @@ dotenv.config();
 connectDB();
 
 const app = express();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Middleware
 app.use(cors());
@@ -30,6 +36,9 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/feedback', feedbackRoutes);
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Server status route
 app.get('/', (req, res) => {

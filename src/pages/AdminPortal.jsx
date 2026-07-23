@@ -328,6 +328,11 @@ export default function AdminPortal({ user, onLogout }) {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
 
+  // Feedback state
+  const [feedbacks, setFeedbacks] = useState([]);
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
+  const [expandedPhoto, setExpandedPhoto] = useState(null);
+
   const fetchStats = useCallback(async () => {
     try { setStats(await api.get('/api/admin/stats')); } catch (e) { console.error(e); }
   }, []);
@@ -352,6 +357,14 @@ export default function AdminPortal({ user, onLogout }) {
   useEffect(() => { fetchOrders(); }, [fetchOrders]);
   useEffect(() => { if (activeTab === 'users') fetchUsers(); }, [activeTab, fetchUsers]);
 
+  const fetchFeedbacks = useCallback(async () => {
+    setFeedbackLoading(true);
+    try { setFeedbacks(await api.get('/api/feedback/all')); }
+    catch (e) { console.error(e); } finally { setFeedbackLoading(false); }
+  }, []);
+
+  useEffect(() => { if (activeTab === 'feedback') fetchFeedbacks(); }, [activeTab, fetchFeedbacks]);
+
   useEffect(() => {
     const t = setTimeout(() => { setSearch(searchInput); setPage(1); }, 450);
     return () => clearTimeout(t);
@@ -367,8 +380,9 @@ export default function AdminPortal({ user, onLogout }) {
   };
 
   const NAV = [
-    { id: 'orders', icon: '📋', label: 'Orders'     },
-    { id: 'users',  icon: '👥', label: 'Customers'  },
+    { id: 'orders',   icon: '📋', label: 'Orders'     },
+    { id: 'users',    icon: '👥', label: 'Customers'  },
+    { id: 'feedback', icon: '💬', label: 'Feedback'   },
   ];
 
   return (
@@ -646,11 +660,115 @@ export default function AdminPortal({ user, onLogout }) {
             ))}
           </div>
         )}
+
+        {/* ════ FEEDBACK TAB ════ */}
+        {activeTab === 'feedback' && (
+          <div>
+            {feedbackLoading ? (
+              <div style={{ textAlign: 'center', padding: 60, color: 'rgba(248,244,240,0.35)' }}>
+                <div style={{ fontSize: 28, marginBottom: 10 }}>⏳</div> Loading feedback…
+              </div>
+            ) : feedbacks.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: 60, color: 'rgba(248,244,240,0.35)' }}>
+                <div style={{ fontSize: 36, marginBottom: 12 }}>💬</div>
+                <p style={{ fontSize: 16, fontWeight: 600 }}>No feedback yet</p>
+                <p style={{ fontSize: 13, color: 'rgba(248,244,240,0.25)' }}>Feedback will appear here when customers review delivered orders.</p>
+              </div>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: 16 }}>
+                {feedbacks.map(fb => (
+                  <div key={fb._id} style={{
+                    background: 'rgba(255,255,255,0.04)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: 16, overflow: 'hidden',
+                    transition: 'border-color 0.2s',
+                  }}>
+                    {/* Photo */}
+                    {fb.photo && (
+                      <div
+                        onClick={() => setExpandedPhoto(`http://localhost:5000${fb.photo}`)}
+                        style={{ cursor: 'pointer', position: 'relative' }}
+                      >
+                        <img
+                          src={`http://localhost:5000${fb.photo}`}
+                          alt="Product feedback"
+                          style={{ width: '100%', height: 180, objectFit: 'cover' }}
+                          onError={e => { e.target.style.display = 'none'; }}
+                        />
+                        <div style={{
+                          position: 'absolute', bottom: 8, right: 8,
+                          background: 'rgba(0,0,0,0.6)', borderRadius: 8,
+                          padding: '4px 10px', fontSize: 11, color: 'white', fontWeight: 600,
+                        }}>📷 Click to enlarge</div>
+                      </div>
+                    )}
+
+                    <div style={{ padding: '18px 20px' }}>
+                      {/* User info + rating */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <div style={{
+                            width: 36, height: 36, borderRadius: '50%',
+                            background: 'linear-gradient(135deg, #e8b4b8, #c97a85)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: 14, fontWeight: 700, color: '#1a0f10', flexShrink: 0,
+                          }}>{fb.user?.fullName?.charAt(0).toUpperCase() || '?'}</div>
+                          <div>
+                            <p style={{ margin: 0, fontWeight: 700, color: '#f8f4f0', fontSize: 14 }}>{fb.user?.fullName || 'Unknown'}</p>
+                            <p style={{ margin: 0, color: 'rgba(248,244,240,0.4)', fontSize: 11 }}>{fb.user?.email || ''}</p>
+                          </div>
+                        </div>
+                        <span style={{
+                          background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)',
+                          color: '#f59e0b', borderRadius: 20, padding: '3px 10px',
+                          fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap',
+                        }}>
+                          {'★'.repeat(fb.rating)}{'☆'.repeat(5 - fb.rating)}
+                        </span>
+                      </div>
+
+                      {/* Order badge */}
+                      <div style={{
+                        display: 'inline-block', marginBottom: 12,
+                        background: 'rgba(232,180,184,0.1)', border: '1px solid rgba(232,180,184,0.2)',
+                        borderRadius: 8, padding: '4px 10px', fontSize: 11, fontWeight: 600, color: '#e8b4b8',
+                      }}>
+                        📦 Order #{fb.orderId}
+                      </div>
+
+                      {/* Comment */}
+                      <p style={{
+                        margin: 0, fontSize: 13, lineHeight: 1.6,
+                        color: 'rgba(248,244,240,0.75)',
+                      }}>"{fb.comment}"</p>
+
+                      {/* Date */}
+                      <p style={{ margin: '12px 0 0', fontSize: 11, color: 'rgba(248,244,240,0.3)' }}>
+                        📅 {fmtShort(fb.createdAt)}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Modals */}
       {selectedOrder && <OrderDetailModal order={selectedOrder} onClose={() => setSelectedOrder(null)} />}
       {selectedUser  && <UserOrdersModal  user={selectedUser}  onClose={() => setSelectedUser(null)} />}
+
+      {/* Photo expand modal */}
+      {expandedPhoto && (
+        <div onClick={() => setExpandedPhoto(null)} style={{
+          position: 'fixed', inset: 0, zIndex: 1000,
+          background: 'rgba(10,8,20,0.85)', backdropFilter: 'blur(6px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, cursor: 'pointer',
+        }}>
+          <img src={expandedPhoto} alt="Feedback" style={{ maxWidth: '90%', maxHeight: '85vh', borderRadius: 16, objectFit: 'contain' }} />
+        </div>
+      )}
     </div>
   );
 }

@@ -81,19 +81,17 @@ export const createProduct = async (req, res) => {
 
     const createdProduct = await product.save();
 
-    // Send email to all registered users asynchronously
-    try {
-      const users = await User.find({}).select('email');
+    // Respond immediately to Admin UI
+    res.status(201).json(createdProduct);
+
+    // Send launch notification email asynchronously in background
+    User.find({}).select('email').then(users => {
       const emails = users.map(u => u.email).filter(Boolean);
       if (emails.length > 0) {
         console.log(`📧 Sending new launch notification email to ${emails.length} user(s)...`);
-        await sendNewProductEmail(createdProduct, emails);
+        sendNewProductEmail(createdProduct, emails).catch(err => console.error('Error sending launch email:', err));
       }
-    } catch (emailErr) {
-      console.error('Error sending new product launch email:', emailErr);
-    }
-
-    return res.status(201).json(createdProduct);
+    }).catch(emailErr => console.error('Error fetching user emails for launch notification:', emailErr));
   } catch (error) {
     console.error('Create product error:', error);
     return res.status(500).json({ message: error.message });

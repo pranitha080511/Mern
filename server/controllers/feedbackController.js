@@ -44,19 +44,20 @@ export const submitFeedback = async (req, res) => {
       photo: photoUrl
     });
 
-    await feedback.save();
+    const savedFeedback = await feedback.save();
 
-    // Call email service
-    await sendFeedbackEmail({
+    // Send HTTP response to user immediately so modal closes without freezing
+    res.status(201).json(savedFeedback);
+
+    // Send notification email asynchronously in background
+    sendFeedbackEmail({
       userName: req.user.fullName || req.user.name || 'Customer',
       userEmail: req.user.email,
       orderId: displayOrderId,
       rating: Number(rating),
       comment,
       photoPath
-    });
-
-    res.status(201).json(feedback);
+    }).catch(emailErr => console.error('Error sending feedback notification email:', emailErr));
   } catch (error) {
     res.status(500).json({ message: error.message || 'Server error' });
   }

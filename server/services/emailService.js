@@ -6,13 +6,23 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const getSmtpUser = () => process.env.EMAIL_USER || process.env.GMAIL_USER || '';
+const getSmtpPass = () => process.env.EMAIL_PASS || process.env.GMAIL_APP_PASSWORD || '';
+const getAdminEmail = () => process.env.ADMIN_EMAIL || process.env.EMAIL_USER || process.env.GMAIL_USER || '';
+
 export const sendFeedbackEmail = async ({ userName, userEmail, orderId, rating, comment, photoPath }) => {
-  const emailUser = process.env.EMAIL_USER;
-  const emailPass = process.env.EMAIL_PASS;
+  const emailUser = getSmtpUser();
+  const emailPass = getSmtpPass();
+  const adminEmail = getAdminEmail();
 
   if (!emailUser || !emailPass) {
-    console.log('⚠️ EMAIL_PASS not configured. Skipping email. Set EMAIL_USER and EMAIL_PASS in .env to enable.');
+    console.log('⚠️ SMTP credentials not configured. Skipping feedback email. Set EMAIL_USER/EMAIL_PASS (or GMAIL_USER/GMAIL_APP_PASSWORD) in .env to enable.');
     return { sent: false, reason: 'Email credentials not configured' };
+  }
+
+  if (!adminEmail) {
+    console.log('⚠️ No admin email configured. Skipping feedback email. Set ADMIN_EMAIL in .env to enable admin notifications.');
+    return { sent: false, reason: 'Admin email not configured' };
   }
 
   const transporter = nodemailer.createTransport({
@@ -67,7 +77,8 @@ export const sendFeedbackEmail = async ({ userName, userEmail, orderId, rating, 
 
   const mailOptions = {
     from: `"Hikari's Luxe Feedback" <${emailUser}>`,
-    to: emailUser,
+    to: adminEmail,
+    replyTo: userEmail,
     subject: `⭐ New Feedback - Order #${orderId} - ${stars}`,
     html: htmlContent,
     attachments: [],
@@ -92,12 +103,18 @@ export const sendFeedbackEmail = async ({ userName, userEmail, orderId, rating, 
 };
 
 export const sendNewProductEmail = async (product, emails) => {
-  const emailUser = process.env.EMAIL_USER;
-  const emailPass = process.env.EMAIL_PASS;
+  const emailUser = getSmtpUser();
+  const emailPass = getSmtpPass();
+  const adminEmail = getAdminEmail();
 
   if (!emailUser || !emailPass) {
-    console.log('⚠️ EMAIL_PASS not configured. Skipping new product email.');
+    console.log('⚠️ SMTP credentials not configured. Skipping new product email.');
     return { sent: false, reason: 'Email credentials not configured' };
+  }
+
+  if (!adminEmail) {
+    console.log('⚠️ No admin email configured. Skipping new product email.');
+    return { sent: false, reason: 'Admin email not configured' };
   }
 
   const transporter = nodemailer.createTransport({
@@ -165,8 +182,8 @@ export const sendNewProductEmail = async (product, emails) => {
 
   const mailOptions = {
     from: `"Hikari's Luxe" <${emailUser}>`,
-    to: emailUser,
-    bcc: emails,
+    to: adminEmail,
+    bcc: emails.filter((email) => email && email !== adminEmail),
     subject: `🌟 New Arrival: ${product.name}`,
     html: htmlContent,
     attachments,

@@ -17,6 +17,11 @@ import feedbackRoutes from './routes/feedbackRoutes.js';
 // Load environment variables
 dotenv.config();
 
+const smtpConfigured = Boolean(process.env.EMAIL_USER || process.env.GMAIL_USER) && Boolean(process.env.EMAIL_PASS || process.env.GMAIL_APP_PASSWORD);
+if (!smtpConfigured) {
+  console.log('⚠️ Email notifications disabled: set EMAIL_USER/EMAIL_PASS or GMAIL_USER/GMAIL_APP_PASSWORD and ADMIN_EMAIL in .env to enable admin emails.');
+}
+
 // Connect to Database
 connectDB();
 

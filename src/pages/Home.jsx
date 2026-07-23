@@ -7,32 +7,34 @@ export default function Home() {
   const [formData, setFormData] = useState({ name: '', email: '' });
   const [submitted, setSubmitted] = useState(false);
 
-  const categories = [
-    {
-      name: 'Makeup',
-      image: 'images/lipstick.jpg',
-      desc: 'Lipsticks, Foundations, Eyeliners, Mascara and more.',
-      filter: 'Makeup'
-    },
-    {
-      name: 'Skincare',
-      image: 'images/skincare.jpg',
-      desc: 'Face Wash, Serum, Moisturizer, Sunscreen and Toners.',
-      filter: 'Skincare'
-    },
-    {
-      name: 'Fragrances',
-      image: 'images/perfume.jpg',
-      desc: 'Luxury perfumes and body mists for every occasion.',
-      filter: 'Fragrance'
-    },
-    {
-      name: 'Nail Care',
-      image: 'images/nail.jpg',
-      desc: 'Nail polish, nail art kits and manicure essentials.',
-      filter: 'Nail Care'
-    }
-  ];
+ const API_URL = import.meta.env.VITE_API_URL;
+
+const categories = [
+  {
+    name: 'Makeup',
+    image: `${API_URL}/images/lipstick.jpg`,
+    desc: 'Lipsticks, Foundations, Eyeliners, Mascara and more.',
+    filter: 'Makeup'
+  },
+  {
+    name: 'Skincare',
+    image: `${API_URL}/images/skincare.jpg`,
+    desc: 'Face Wash, Serum, Moisturizer, Sunscreen and Toners.',
+    filter: 'Skincare'
+  },
+  {
+    name: 'Fragrances',
+    image: `${API_URL}/images/perfume.jpg`,
+    desc: 'Luxury perfumes and body mists for every occasion.',
+    filter: 'Fragrance'
+  },
+  {
+    name: 'Nail Care',
+    image: `${API_URL}/images/nail.jpg`,
+    desc: 'Nail polish, nail art kits and manicure essentials.',
+    filter: 'Nail Care'
+  }
+];
 
   const handleCategoryClick = (filter) => {
     navigate('/products', { state: { category: filter } });

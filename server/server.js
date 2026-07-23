@@ -43,6 +43,12 @@ app.use(
   express.static(path.join(__dirname, "..", "images"))
 );
 
+// Serve videos folder from project root
+app.use(
+  "/videos",
+  express.static(path.join(__dirname, "..", "videos"))
+);
+
 
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);

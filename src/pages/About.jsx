@@ -3,6 +3,7 @@ import { Play, Sparkles, ChevronDown, CheckCircle2 } from 'lucide-react';
 
 export default function About() {
   const [activeAccordion, setActiveAccordion] = useState(null);
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const toggleAccordion = (index) => {
     setActiveAccordion(activeAccordion === index ? null : index);
@@ -50,7 +51,7 @@ export default function About() {
         <div className="relative group">
           <div className="absolute inset-0 bg-pink-500/10 rounded-2xl blur-xl group-hover:bg-pink-500/15 transition duration-300" />
           <img 
-            src="images/about.jpg" 
+            src={`${API_URL}/images/about.jpg`} 
             alt="About Hikari's Luxe" 
             className="relative w-full h-[380px] object-cover rounded-2xl shadow-xl border border-pink-100"
           />
@@ -116,9 +117,9 @@ export default function About() {
             className="w-full h-full object-cover" 
             controls 
             preload="metadata"
-            poster="images/cosmetics-bg.jpg"
+            poster={`${API_URL}/images/cosmetics-bg.jpg`}
           >
-            <source src="videos/brand.mp4" type="video/mp4" />
+            <source src={`${API_URL}/videos/brand.mp4`} type="video/mp4" />
             Your browser does not support the video tag.
           </video>
         </div>
@@ -141,7 +142,7 @@ export default function About() {
         </div>
         <div className="w-full md:w-80 h-80 shrink-0 overflow-hidden rounded-2xl shadow-lg border border-pink-100">
           <img 
-            src="images/cosmetics-bg.jpg" 
+            src={`${API_URL}/images/cosmetics-bg.jpg`} 
             alt="Hikari Cosmetics Selection" 
             className="w-full h-full object-cover hover:scale-105 transition duration-500"
           />

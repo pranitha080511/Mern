@@ -48,17 +48,7 @@ export default function FeedbackForm({ order, onClose, onSubmitted }) {
       formData.append('comment', comment.trim());
       if (photo) formData.append('photo', photo);
 
-      const token = localStorage.getItem('token');
-
-      const res = await fetch('http://localhost:5000/api/feedback', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.message || 'Failed to submit feedback');
+      const data = await api.post('/api/feedback', formData);
 
       setSuccess(true);
       if (onSubmitted) onSubmitted(data);

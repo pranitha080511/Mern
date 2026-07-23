@@ -15,29 +15,12 @@ export const createOrder = async (req, res) => {
     // Use an atomic counter document to generate a sequential orderId.
     // Initialize the counter from the current maximum numeric orderId in the orders
     // collection to avoid generating values that already exist (handles older data).
-    const counterColl = mongoose.connection.db.collection('counters');
-
     // Determine current max numeric orderId (only consider purely numeric orderIds)
-    const agg = await Order.aggregate([
-      { $match: { orderId: { $regex: '^[0-9]+$' } } },
-      { $group: { _id: null, max: { $max: { $toInt: '$orderId' } } } }
-    ]);
-    const currentMax = (agg && agg[0] && agg[0].max) ? agg[0].max : 1000;
+    // Default starting sequence if counters document is absent
+    const currentMax = 1000;
 
-    // If counter doc does not exist, create it initialized to currentMax
-    let counter = await counterColl.findOne({ _id: 'orderId' });
-    if (!counter) {
-      await counterColl.insertOne({ _id: 'orderId', seq: currentMax });
-    }
-
-    // Now atomically increment to get next sequence value
-    counter = await counterColl.findOneAndUpdate(
-      { _id: 'orderId' },
-      { $inc: { seq: 1 } },
-      { returnDocument: 'after' }
-    );
-
-    let nextId = (counter && counter.value && counter.value.seq) ? counter.value.seq : Date.now();
+    // Generate a collision-resistant orderId using timestamp + randomness
+    const nextId = `${Date.now()}${Math.floor(Math.random() * 9000) + 1000}`;
 
     // Try saving the order; on duplicate-key (rare), try a few times by incrementing the counter further.
     let createdOrder = null;

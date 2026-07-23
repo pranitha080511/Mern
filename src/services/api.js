@@ -4,8 +4,10 @@ export const api = {
   async request(endpoint, options = {}) {
     const token = localStorage.getItem("token");
 
+    const isFormData = options.body instanceof FormData;
+
     const headers = {
-      "Content-Type": "application/json",
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
       ...options.headers,
     };
 
@@ -18,7 +20,7 @@ export const api = {
       headers,
     };
 
-    if (options.body && typeof options.body === "object") {
+    if (options.body && typeof options.body === "object" && !isFormData) {
       config.body = JSON.stringify(options.body);
     }
 

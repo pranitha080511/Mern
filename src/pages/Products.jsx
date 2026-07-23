@@ -3,6 +3,16 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Search, ShoppingCart, Check, Heart } from 'lucide-react';
 import api from '../services/api';
 
+const formatImageUrl = (img) => {
+  if (!img) return "https://placehold.co/400x400?text=No+Image";
+  if (img.startsWith('http://') || img.startsWith('https://') || img.startsWith('data:')) {
+    return img;
+  }
+  const cleanPath = img.startsWith('/') ? img.slice(1) : img;
+  const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  return `${baseUrl}/${cleanPath}`;
+};
+
 export default function Products({ addToCart, user, token }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -166,7 +176,7 @@ export default function Products({ addToCart, user, token }) {
                 {/* Image */}
                 <div className="relative h-60 w-full bg-pink-50/30 overflow-hidden">
                  <img
-  src={`${import.meta.env.VITE_API_URL}/${product.image}`}
+  src={formatImageUrl(product.image)}
   alt={product.name}
   className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
   onError={(e) => {

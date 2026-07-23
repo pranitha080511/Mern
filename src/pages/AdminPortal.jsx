@@ -14,6 +14,16 @@ const fmt = (n) => `₹${Number(n).toLocaleString('en-IN', { minimumFractionDigi
 const fmtDate = (d) => new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 const fmtShort = (d) => new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
 
+const formatImageUrl = (img) => {
+  if (!img) return "https://placehold.co/400x400?text=No+Image";
+  if (img.startsWith('http://') || img.startsWith('https://') || img.startsWith('data:')) {
+    return img;
+  }
+  const cleanPath = img.startsWith('/') ? img.slice(1) : img;
+  const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  return `${baseUrl}/${cleanPath}`;
+};
+
 /* ─────────────────────── StatusBadge ─────────────────────── */
 function StatusBadge({ status }) {
   const s = STATUS_CONFIG[status] || STATUS_CONFIG.Processing;
@@ -322,6 +332,9 @@ export default function AdminPortal({ user, onLogout }) {
   const [showProductModal, setShowProductModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [productForm, setProductForm] = useState({ name: '', price: '', image: '', category: 'Skincare', inStock: true });
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
+  const [savingProduct, setSavingProduct] = useState(false);
 
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
@@ -371,18 +384,63 @@ export default function AdminPortal({ user, onLogout }) {
 
   useEffect(() => { if (activeTab === 'products') fetchProducts(); }, [activeTab, fetchProducts]);
 
+  const openAddProductModal = () => {
+    setEditingProduct(null);
+    setProductForm({ name: '', price: '', image: '', category: 'Skincare', inStock: true });
+    setImageFile(null);
+    setImagePreview('');
+    setShowProductModal(true);
+  };
+
+  const openEditProductModal = (p) => {
+    setEditingProduct(p);
+    setProductForm({ name: p.name, price: p.price, image: p.image, category: p.category, inStock: p.inStock });
+    setImageFile(null);
+    setImagePreview(formatImageUrl(p.image));
+    setShowProductModal(true);
+  };
+
   const handleSaveProduct = async (e) => {
     e.preventDefault();
+    setSavingProduct(true);
     try {
-      if (editingProduct) {
-        await api.put(`/api/products/${editingProduct.id}`, productForm);
+      if (imageFile) {
+        const formData = new FormData();
+        formData.append('name', productForm.name);
+        formData.append('price', productForm.price);
+        formData.append('category', productForm.category);
+        formData.append('imageFile', imageFile);
+        if (editingProduct) {
+          formData.append('inStock', productForm.inStock);
+          await api.put(`/api/products/${editingProduct.id}`, formData);
+        } else {
+          await api.post('/api/products', formData);
+        }
       } else {
-        await api.post('/api/products', productForm);
+        if (!productForm.image && !editingProduct) {
+          alert('Please upload an image file (.jpg or .png format)');
+          setSavingProduct(false);
+          return;
+        }
+        if (editingProduct) {
+          await api.put(`/api/products/${editingProduct.id}`, productForm);
+        } else {
+          await api.post('/api/products', productForm);
+        }
       }
+
+      if (!editingProduct) {
+        alert('🎉 New product launched! Email notification sent to all registered users.');
+      }
+
       setShowProductModal(false);
+      setImageFile(null);
+      setImagePreview('');
       fetchProducts();
     } catch (err) {
       alert('Error saving product: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setSavingProduct(false);
     }
   };
 
@@ -646,11 +704,7 @@ export default function AdminPortal({ user, onLogout }) {
         {activeTab === 'products' && (
           <div>
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 18 }}>
-              <button onClick={() => {
-                setEditingProduct(null);
-                setProductForm({ name: '', price: '', image: '', category: 'Skincare', inStock: true });
-                setShowProductModal(true);
-              }} style={{
+              <button onClick={openAddProductModal} style={{
                 background: 'linear-gradient(135deg, #e8b4b8, #c97a85)',
                 color: '#1a0f10', border: 'none', padding: '10px 20px', borderRadius: 8,
                 fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
@@ -688,7 +742,7 @@ export default function AdminPortal({ user, onLogout }) {
                     onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                     >
-                      <img src={p.image.startsWith('http') ? p.image : `${import.meta.env.VITE_API_URL}/${p.image}`} alt={p.name} style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 8 }} onError={e => { e.target.onerror = null; e.target.src = "https://placehold.co/400x400?text=No+Image"; }} />
+                      <img src={formatImageUrl(p.image)} alt={p.name} style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 8 }} onError={e => { e.target.onerror = null; e.target.src = "https://placehold.co/400x400?text=No+Image"; }} />
                       <div style={{ fontWeight: 600, fontSize: 14 }}>{p.name}</div>
                       <div style={{ fontSize: 13, color: 'rgba(248,244,240,0.6)' }}>{p.category}</div>
                       <div style={{ fontWeight: 700, color: '#e8b4b8' }}>₹{p.price}</div>
@@ -700,11 +754,7 @@ export default function AdminPortal({ user, onLogout }) {
                         )}
                       </div>
                       <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-                        <button onClick={() => {
-                          setEditingProduct(p);
-                          setProductForm({ name: p.name, price: p.price, image: p.image, category: p.category, inStock: p.inStock });
-                          setShowProductModal(true);
-                        }} style={{
+                        <button onClick={() => openEditProductModal(p)} style={{
                           background: 'rgba(59,130,246,0.15)', color: '#60a5fa', border: '1px solid rgba(59,130,246,0.3)',
                           padding: '6px 12px', borderRadius: 6, cursor: 'pointer', fontSize: 12, fontWeight: 600,
                         }}>Edit</button>
@@ -944,11 +994,69 @@ export default function AdminPortal({ user, onLogout }) {
                 </div>
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'rgba(248,244,240,0.6)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 1 }}>Image URL / Path</label>
-                <input required type="text" value={productForm.image} onChange={e => setProductForm({ ...productForm, image: e.target.value })} style={{
-                  width: '100%', padding: '12px 16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: 10, color: '#f8f4f0', fontSize: 14, outline: 'none', boxSizing: 'border-box'
-                }} placeholder="images/lipstick.jpg or https://..." />
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'rgba(248,244,240,0.6)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 1 }}>Upload Image (.jpg, .png, .webp)</label>
+                <div style={{
+                  border: '2px dashed rgba(232,180,184,0.35)',
+                  borderRadius: 14, padding: '18px', textAlign: 'center',
+                  background: 'rgba(255,255,255,0.02)', position: 'relative',
+                  cursor: 'pointer', transition: 'border-color 0.2s',
+                }}>
+                  <input
+                    type="file"
+                    accept="image/png, image/jpeg, image/jpg, image/webp"
+                    onChange={e => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        setImageFile(file);
+                        setImagePreview(URL.createObjectURL(file));
+                      }
+                    }}
+                    style={{
+                      position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', width: '100%', height: '100%', zIndex: 10
+                    }}
+                  />
+                  
+                  {imagePreview || productForm.image ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+                      <img
+                        src={imagePreview || formatImageUrl(productForm.image)}
+                        alt="Product preview"
+                        style={{ width: 110, height: 110, objectFit: 'cover', borderRadius: 12, border: '2px solid rgba(232,180,184,0.4)', boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}
+                        onError={e => { e.target.onerror = null; e.target.src = "https://placehold.co/400x400?text=No+Image"; }}
+                      />
+                      <div style={{ fontSize: 12, color: '#e8b4b8', fontWeight: 600 }}>
+                        {imageFile ? `📁 ${imageFile.name} (${(imageFile.size / 1024).toFixed(1)} KB)` : 'Current Image'}
+                      </div>
+                      <span style={{ fontSize: 11, color: 'rgba(248,244,240,0.4)' }}>Click or drag a new image file (.jpg, .png) to change</span>
+                    </div>
+                  ) : (
+                    <div>
+                      <div style={{ fontSize: 32, marginBottom: 8 }}>🖼️</div>
+                      <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: '#f8f4f0' }}>Click or Drag Image File Here</p>
+                      <p style={{ margin: '4px 0 0', fontSize: 12, color: 'rgba(248,244,240,0.4)' }}>Select JPG, PNG or WEBP image format</p>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Fallback image path input */}
+                <div style={{ marginTop: 10 }}>
+                  <details style={{ fontSize: 11, color: 'rgba(248,244,240,0.5)' }}>
+                    <summary style={{ cursor: 'pointer', marginBottom: 6 }}>Or specify direct image path / URL</summary>
+                    <input
+                      type="text"
+                      value={productForm.image}
+                      onChange={e => {
+                        setProductForm({ ...productForm, image: e.target.value });
+                        if (!imageFile) setImagePreview(e.target.value);
+                      }}
+                      style={{
+                        width: '100%', padding: '8px 12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+                        borderRadius: 8, color: '#f8f4f0', fontSize: 12, outline: 'none', boxSizing: 'border-box', marginTop: 4
+                      }}
+                      placeholder="images/lipstick.jpg or https://..."
+                    />
+                  </details>
+                </div>
               </div>
               
               {editingProduct && (
@@ -958,11 +1066,18 @@ export default function AdminPortal({ user, onLogout }) {
                 </div>
               )}
 
-              <button type="submit" style={{
-                marginTop: 16, background: 'linear-gradient(135deg, #e8b4b8, #c97a85)',
-                color: '#1a0f10', border: 'none', padding: '14px', borderRadius: 10,
-                fontWeight: 700, fontSize: 15, cursor: 'pointer', transition: 'transform 0.2s',
-              }}>{editingProduct ? 'Update Product' : 'Create Product'}</button>
+              <button
+                type="submit"
+                disabled={savingProduct}
+                style={{
+                  marginTop: 16, background: 'linear-gradient(135deg, #e8b4b8, #c97a85)',
+                  color: '#1a0f10', border: 'none', padding: '14px', borderRadius: 10,
+                  fontWeight: 700, fontSize: 15, cursor: savingProduct ? 'default' : 'pointer',
+                  opacity: savingProduct ? 0.7 : 1, transition: 'transform 0.2s',
+                }}
+              >
+                {savingProduct ? 'Saving Product & Sending Email…' : (editingProduct ? 'Update Product' : '🚀 Launch New Product')}
+              </button>
             </form>
           </div>
         </div>

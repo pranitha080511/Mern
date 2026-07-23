@@ -1,4 +1,6 @@
 import Product from '../models/Product.js';
+import User from '../models/User.js';
+import { sendNewProductEmail } from '../services/emailService.js';
 
 const defaultProducts = [
   { id: 1, name: 'Matte Lipstick', price: 799, image: 'images/lipstick.jpg', category: 'Makeup' },
@@ -55,10 +57,15 @@ export const seedProducts = async (req, res) => {
 // @access  Private/Admin
 export const createProduct = async (req, res) => {
   try {
-    const { name, price, image, category } = req.body;
-    
+    const { name, price, category } = req.body;
+    let image = req.body.image;
+
+    if (req.file) {
+      image = `uploads/products/${req.file.filename}`.replace(/\\/g, '/');
+    }
+
     if (!name || !price || !image || !category) {
-      return res.status(400).json({ message: 'Please provide all required fields' });
+      return res.status(400).json({ message: 'Please provide all required fields (Name, Price, Category, and Image file/URL)' });
     }
 
     const id = Date.now(); // Generate numeric ID
@@ -66,7 +73,7 @@ export const createProduct = async (req, res) => {
     const product = new Product({
       id,
       name,
-      price,
+      price: Number(price),
       image,
       category,
       inStock: true
@@ -74,17 +81,16 @@ export const createProduct = async (req, res) => {
 
     const createdProduct = await product.save();
 
-    // Send email to all users asynchronously
+    // Send email to all registered users asynchronously
     try {
-      const User = (await import('../models/User.js')).default;
-      const { sendNewProductEmail } = await import('../services/emailService.js');
       const users = await User.find({}).select('email');
-      const emails = users.map(u => u.email);
+      const emails = users.map(u => u.email).filter(Boolean);
       if (emails.length > 0) {
+        console.log(`📧 Sending new launch notification email to ${emails.length} user(s)...`);
         sendNewProductEmail(createdProduct, emails);
       }
     } catch (emailErr) {
-      console.error('Error sending new product email:', emailErr);
+      console.error('Error sending new product launch email:', emailErr);
     }
 
     return res.status(201).json(createdProduct);
@@ -99,17 +105,22 @@ export const createProduct = async (req, res) => {
 // @access  Private/Admin
 export const updateProduct = async (req, res) => {
   try {
-    const { name, price, image, category, inStock } = req.body;
-    
+    const { name, price, category, inStock } = req.body;
+    let image = req.body.image;
+
+    if (req.file) {
+      image = `uploads/products/${req.file.filename}`.replace(/\\/g, '/');
+    }
+
     const product = await Product.findOne({ id: Number(req.params.id) });
 
     if (product) {
-      product.name = name || product.name;
-      product.price = price || product.price;
-      product.image = image || product.image;
-      product.category = category || product.category;
+      if (name) product.name = name;
+      if (price) product.price = Number(price);
+      if (image) product.image = image;
+      if (category) product.category = category;
       if (inStock !== undefined) {
-        product.inStock = inStock;
+        product.inStock = inStock === 'true' || inStock === true;
       }
 
       const updatedProduct = await product.save();

@@ -96,9 +96,10 @@ export default function CartDrawer({ isOpen, onClose, cartItems, updateQuantity,
                   cartItems.map((item) => (
                     <div key={item.id} className="flex items-center space-x-4 p-3 bg-pink-50/40 hover:bg-pink-50/70 rounded-xl border border-pink-100/50 transition duration-150">
                       <img
-                        src={item.image?.startsWith('http') ? item.image : `${API_URL}/${item.image}`}
+                        src={item.image?.startsWith('http') || item.image?.startsWith('data:') ? item.image : `${API_URL || 'http://localhost:5000'}/${item.image?.startsWith('/') ? item.image.slice(1) : item.image}`}
                         alt={item.name}
                         className="w-16 h-16 object-cover rounded-lg border border-pink-200 shadow-sm"
+                        onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/400x400?text=No+Image"; }}
                       />
 
                       <div className="flex-grow">

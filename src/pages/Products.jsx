@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Search, ShoppingCart, Check } from 'lucide-react';
+import api from '../services/api';
 
 export default function Products({ addToCart }) {
   const location = useLocation();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [addedProductId, setAddedProductId] = useState(null);
+  const [productsList, setProductsList] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Read passed category state from routing navigation (Home page category cards)
   useEffect(() => {
@@ -15,22 +18,22 @@ export default function Products({ addToCart }) {
     }
   }, [location.state]);
 
-  const categories = ['All', 'Makeup', 'Skincare', 'Fragrance', 'Nail Care'];
+  // Fetch products from backend
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const data = await api.get('/api/products');
+        setProductsList(data);
+      } catch (err) {
+        console.error('Failed to load products:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
 
-  const productsList = [
-    { id: 1, name: 'Matte Lipstick', price: 799, image: 'images/lipstick.jpg', category: 'Makeup' },
-    { id: 2, name: 'Vitamin C Serum', price: 999, image: 'images/serum.jpg', category: 'Skincare' },
-    { id: 3, name: 'Face Cream', price: 699, image: 'images/moisturizer.jpg', category: 'Skincare' },
-    { id: 4, name: 'Luxury Perfume', price: 1999, image: 'images/perfume.jpg', category: 'Fragrance' },
-    { id: 5, name: 'Nail Polish', price: 499, image: 'images/nail.jpg', category: 'Nail Care' },
-    { id: 6, name: 'Foundation', price: 1099, image: 'images/foundation.jpg', category: 'Makeup' },
-    { id: 7, name: 'Waterproof Eyeliner', price: 399, image: 'images/eyeliner.jpg', category: 'Makeup' },
-    { id: 8, name: 'Face Wash', price: 599, image: 'images/facewash.jpg', category: 'Skincare' },
-    { id: 9, name: 'Sunscreen SPF 50', price: 899, image: 'images/sunscreen.jpg', category: 'Skincare' },
-    { id: 10, name: 'Blush Palette', price: 749, image: 'images/blush.jpg', category: 'Makeup' },
-    { id: 11, name: 'Compact Powder', price: 699, image: 'images/compact.jpg', category: 'Makeup' },
-    { id: 12, name: 'Face Cleanser', price: 649, image: 'images/cleanser.jpg', category: 'Skincare' },
-  ];
+  const categories = ['All', 'Makeup', 'Skincare', 'Fragrance', 'Nail Care'];
 
   // Filtering Logic
   const filteredProducts = productsList.filter((product) => {
@@ -94,7 +97,11 @@ export default function Products({ addToCart }) {
       </div>
 
       {/* Products Grid */}
-      {filteredProducts.length === 0 ? (
+      {loading ? (
+        <div className="flex justify-center items-center py-20">
+          <div className="w-12 h-12 border-4 border-pink-200 border-t-pink-600 rounded-full animate-spin" />
+        </div>
+      ) : filteredProducts.length === 0 ? (
         <div className="text-center py-20 bg-white rounded-3xl border border-pink-50 shadow-sm">
           <p className="text-lg text-gray-500 font-medium">No products found matching your criteria.</p>
           <button 

@@ -9,15 +9,14 @@ import Products from './pages/Products';
 import Profile from './pages/Profile';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import api from './services/api';
 
 export default function App() {
-  // Authentication state initialized from localStorage
-  const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('currentUser');
-    return saved ? JSON.parse(saved) : null;
-  });
+  // Authentication states
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(() => localStorage.getItem('token'));
 
-  // Shopping cart state initialized from localStorage
+  // Shopping cart state initialized from localStorage as fallback
   const [cart, setCart] = useState(() => {
     const saved = localStorage.getItem('cart');
     return saved ? JSON.parse(saved) : [];
@@ -26,18 +25,89 @@ export default function App() {
   // Cart Drawer open/close state
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  // Sync state to localStorage
+  // Load user profile on mount if token exists
   useEffect(() => {
-    if (user) {
-      localStorage.setItem('currentUser', JSON.stringify(user));
-    } else {
-      localStorage.removeItem('currentUser');
-    }
-  }, [user]);
+    const loadProfile = async () => {
+      if (token) {
+        try {
+          const data = await api.get('/api/auth/me');
+          setUser(data);
+          // Set cart from database
+          if (data.cart) {
+            const dbCart = data.cart.map(item => ({
+              id: item.product.id,
+              name: item.product.name,
+              price: item.product.price,
+              image: item.product.image,
+              category: item.product.category,
+              quantity: item.quantity
+            }));
+            setCart(dbCart);
+          }
+        } catch (error) {
+          console.error('Session expired or invalid token', error);
+          handleLogout();
+        }
+      }
+    };
+    loadProfile();
+  }, [token]);
 
+  // Sync cart state to database if user is logged in
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cart));
-  }, [cart]);
+    if (user && token) {
+      const syncCart = async () => {
+        try {
+          const cartPayload = cart.map(item => ({ id: item.id, quantity: item.quantity }));
+          await api.put('/api/cart', { cartItems: cartPayload });
+        } catch (error) {
+          console.error('Failed to sync cart to DB', error);
+        }
+      };
+
+      const timeoutId = setTimeout(syncCart, 500);
+      return () => clearTimeout(timeoutId);
+    } else if (!token) {
+      // If guest user, store in localStorage
+      localStorage.setItem('cart', JSON.stringify(cart));
+    }
+  }, [cart, user, token]);
+
+  const handleLoginSuccess = async (userData) => {
+    localStorage.setItem('token', userData.token);
+    setToken(userData.token);
+    setUser(userData);
+    
+    // Merge guest cart
+    try {
+      const guestCart = JSON.parse(localStorage.getItem('cart') || '[]');
+      if (guestCart.length > 0) {
+        const mergedDbCart = await api.post('/api/cart/merge', { guestCart });
+        const mappedCart = mergedDbCart.map(item => ({
+          id: item.product.id,
+          name: item.product.name,
+          price: item.product.price,
+          image: item.product.image,
+          category: item.product.category,
+          quantity: item.quantity
+        }));
+        setCart(mappedCart);
+        localStorage.removeItem('cart'); // Clear guest cart
+      } else if (userData.cart) {
+        const dbCart = userData.cart.map(item => ({
+          id: item.product.id,
+          name: item.product.name,
+          price: item.product.price,
+          image: item.product.image,
+          category: item.product.category,
+          quantity: item.quantity
+        }));
+        setCart(dbCart);
+      }
+    } catch (err) {
+      console.error('Error merging cart on login:', err);
+    }
+  };
 
   // Cart Operations
   const addToCart = (product) => {
@@ -75,6 +145,10 @@ export default function App() {
 
   const handleLogout = () => {
     setUser(null);
+    setToken(null);
+    localStorage.removeItem('token');
+    localStorage.removeItem('cart');
+    setCart([]);
   };
 
   return (
@@ -95,14 +169,14 @@ export default function App() {
             <Route 
               path="/profile" 
               element={
-                user ? (
+                token ? (
                   <Profile user={user} setUser={setUser} onLogout={handleLogout} />
                 ) : (
                   <Navigate to="/login" replace />
                 )
               } 
             />
-            <Route path="/login" element={<Login user={user} setUser={setUser} />} />
+            <Route path="/login" element={<Login user={user} onLoginSuccess={handleLoginSuccess} />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

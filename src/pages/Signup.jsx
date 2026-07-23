@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User, Mail, Phone, Calendar, Lock, ShieldCheck, CheckCircle2, AlertCircle } from 'lucide-react';
+import api from '../services/api';
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -86,16 +87,28 @@ export default function Signup() {
     return isValid;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validate()) {
-      setSuccess(true);
-      // Simulate registering user locally or updating list
-      // In a real project we would post to API.
-      setTimeout(() => {
-        setSuccess(false);
-        navigate('/login');
-      }, 2500);
+      try {
+        await api.post('/api/auth/register', {
+          fullName: form.fullName,
+          email: form.email,
+          password: form.password,
+          phone: form.phone,
+          dob: form.dob,
+          gender: form.gender,
+          skinType: form.skinType
+        });
+        setSuccess(true);
+        setTimeout(() => {
+          setSuccess(false);
+          navigate('/login');
+        }, 2500);
+      } catch (err) {
+        console.error(err);
+        setErrors({ apiError: err.message || 'Registration failed. Please try again.' });
+      }
     }
   };
 
@@ -136,9 +149,9 @@ export default function Signup() {
           <form onSubmit={handleSubmit} className="space-y-4 text-sm" noValidate>
             
             {Object.keys(errors).length > 0 && (
-              <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl flex items-center space-x-3 text-sm font-semibold">
+              <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl flex items-center space-x-3 text-sm font-semibold animate-shake">
                 <AlertCircle size={18} className="shrink-0" />
-                <span>Please correct the errors in the fields below.</span>
+                <span>{errors.apiError || 'Please correct the errors in the fields below.'}</span>
               </div>
             )}
 

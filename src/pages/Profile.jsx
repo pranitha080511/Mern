@@ -1,68 +1,116 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, Mail, Phone, Calendar, MapPin, Heart, ShoppingCart, Key, LogOut, CheckCircle, Edit, Trash2 } from 'lucide-react';
+import api from '../services/api';
 
 export default function Profile({ user, setUser, onLogout }) {
   const [isEditing, setIsEditing] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [editForm, setEditForm] = useState({
-    fullName: user?.fullName || 'Priya Sharma',
-    phone: user?.phone || '+91 98765 43210',
-    dob: user?.dob || '2002-08-15',
-    gender: user?.gender || 'Female',
-    address: user?.address || '24, Anna Nagar, Madurai, Tamil Nadu - 625020',
-    skinType: user?.skinType || 'Combination'
+    fullName: '',
+    phone: '',
+    dob: '',
+    gender: 'Female',
+    address: '',
+    skinType: 'Combination'
   });
 
   const [pwForm, setPwForm] = useState({ current: '', new: '', confirm: '' });
   const [pwMessage, setPwMessage] = useState(null);
 
   // Orders list state
-  const [orders, setOrders] = useState([
-    { id: '1001', product: 'Matte Lipstick', price: '₹799', status: 'Delivered', color: 'bg-green-100 text-green-700' },
-    { id: '1002', product: 'Vitamin C Serum', price: '₹999', status: 'Shipped', color: 'bg-blue-100 text-blue-700' },
-    { id: '1003', product: 'Hydrating Face Cream', price: '₹699', status: 'Processing', color: 'bg-yellow-100 text-yellow-700' }
-  ]);
+  const [orders, setOrders] = useState([]);
+  const [loadingOrders, setLoadingOrders] = useState(true);
 
   // Wishlist list state
-  const [wishlist, setWishlist] = useState([
-    { id: 'w1', name: 'Luxury Perfume', price: 1999, image: 'images/perfume.jpg' },
-    { id: 'w2', name: 'Face Cleanser', price: 649, image: 'images/cleanser.jpg' },
-    { id: 'w3', name: 'Nail Polish Set', price: 499, image: 'images/nail.jpg' },
-    { id: 'w4', name: 'Sunscreen SPF 50', price: 899, image: 'images/sunscreen.jpg' }
-  ]);
+  const [wishlist, setWishlist] = useState([]);
+  const [loadingWishlist, setLoadingWishlist] = useState(true);
 
   const [supportOpen, setSupportOpen] = useState(false);
 
-  const handleEditSave = (e) => {
+  // Sync user data to edit form
+  useEffect(() => {
+    if (user) {
+      setEditForm({
+        fullName: user.fullName || '',
+        phone: user.phone || '',
+        dob: user.dob || '',
+        gender: user.gender || 'Female',
+        address: user.address || '',
+        skinType: user.skinType || 'Combination'
+      });
+    }
+  }, [user]);
+
+  // Fetch orders and wishlist on mount
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const data = await api.get('/api/orders/my-orders');
+        setOrders(data);
+      } catch (err) {
+        console.error('Failed to fetch orders:', err);
+      } finally {
+        setLoadingOrders(false);
+      }
+    };
+
+    const fetchWishlist = async () => {
+      try {
+        const data = await api.get('/api/wishlist');
+        setWishlist(data);
+      } catch (err) {
+        console.error('Failed to fetch wishlist:', err);
+      } finally {
+        setLoadingWishlist(false);
+      }
+    };
+
+    fetchOrders();
+    fetchWishlist();
+  }, []);
+
+  const handleEditSave = async (e) => {
     e.preventDefault();
-    setUser({
-      ...user,
-      fullName: editForm.fullName,
-      phone: editForm.phone,
-      dob: editForm.dob,
-      gender: editForm.gender,
-      address: editForm.address,
-      skinType: editForm.skinType
-    });
-    setIsEditing(false);
+    try {
+      const data = await api.put('/api/auth/profile', editForm);
+      setUser(data);
+      setIsEditing(false);
+    } catch (err) {
+      console.error('Failed to update profile:', err);
+      alert(err.message || 'Failed to update profile');
+    }
   };
 
-  const handlePasswordChange = (e) => {
+  const handlePasswordChange = async (e) => {
     e.preventDefault();
     if (pwForm.new !== pwForm.confirm) {
       setPwMessage({ type: 'error', text: 'New passwords do not match.' });
       return;
     }
-    setPwMessage({ type: 'success', text: 'Password updated successfully!' });
-    setTimeout(() => {
-      setIsChangingPassword(false);
-      setPwForm({ current: '', new: '', confirm: '' });
-      setPwMessage(null);
-    }, 2000);
+    try {
+      const data = await api.put('/api/auth/change-password', {
+        current: pwForm.current,
+        new: pwForm.new
+      });
+      setPwMessage({ type: 'success', text: data.message || 'Password updated successfully!' });
+      setTimeout(() => {
+        setIsChangingPassword(false);
+        setPwForm({ current: '', new: '', confirm: '' });
+        setPwMessage(null);
+      }, 2000);
+    } catch (err) {
+      console.error('Failed to change password:', err);
+      setPwMessage({ type: 'error', text: err.message || 'Failed to update password' });
+    }
   };
 
-  const handleRemoveWishlist = (id) => {
-    setWishlist(wishlist.filter(item => item.id !== id));
+  const handleRemoveWishlist = async (id) => {
+    try {
+      const updatedWishlist = await api.post('/api/wishlist/toggle', { productId: id });
+      setWishlist(updatedWishlist);
+    } catch (err) {
+      console.error('Failed to remove from wishlist:', err);
+    }
   };
 
   return (
@@ -283,18 +331,35 @@ export default function Profile({ user, setUser, onLogout }) {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 text-sm">
-              {orders.map((order) => (
-                <tr key={order.id} className="hover:bg-pink-50/20 transition">
-                  <td className="p-4 text-gray-500 font-mono">#{order.id}</td>
-                  <td className="p-4 text-gray-800 font-semibold">{order.product}</td>
-                  <td className="p-4 text-pink-600 font-bold">{order.price}</td>
-                  <td className="p-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold inline-block ${order.color}`}>
-                      {order.status}
-                    </span>
+              {loadingOrders ? (
+                <tr>
+                  <td colSpan="4" className="p-8 text-center text-gray-500">
+                    <div className="w-6 h-6 border-2 border-pink-200 border-t-pink-600 rounded-full animate-spin mx-auto mb-2" />
+                    Loading orders...
                   </td>
                 </tr>
-              ))}
+              ) : orders.length === 0 ? (
+                <tr>
+                  <td colSpan="4" className="p-8 text-center text-gray-500">No orders found.</td>
+                </tr>
+              ) : (
+                orders.map((order) => (
+                  <tr key={order.orderId || order._id} className="hover:bg-pink-50/20 transition">
+                    <td className="p-4 text-gray-500 font-mono">#{order.orderId}</td>
+                    <td className="p-4 text-gray-800 font-semibold">
+                      <div className="max-w-xs sm:max-w-md truncate mx-auto" title={order.products.map((p) => `${p.name} (x${p.quantity})`).join(', ')}>
+                        {order.products.map((p) => `${p.name} (x${p.quantity})`).join(', ')}
+                      </div>
+                    </td>
+                    <td className="p-4 text-pink-600 font-bold">₹{order.totalAmount}</td>
+                    <td className="p-4">
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold inline-block ${order.color}`}>
+                        {order.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -305,13 +370,17 @@ export default function Profile({ user, setUser, onLogout }) {
         <h2 className="text-2xl font-bold text-gray-800 border-l-4 border-pink-500 pl-4 mb-8">
           Wishlist
         </h2>
-        {wishlist.length === 0 ? (
+        {loadingWishlist ? (
+          <div className="flex justify-center items-center py-8">
+            <div className="w-8 h-8 border-3 border-pink-200 border-t-pink-600 rounded-full animate-spin" />
+          </div>
+        ) : wishlist.length === 0 ? (
           <p className="text-center py-6 text-gray-500">Your wishlist is empty.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {wishlist.map((item) => (
               <div 
-                key={item.id} 
+                key={item.id || item._id} 
                 className="flex items-center justify-between p-4 bg-pink-50/20 rounded-2xl border border-pink-100/30"
               >
                 <div className="flex items-center space-x-3">
@@ -322,7 +391,7 @@ export default function Profile({ user, setUser, onLogout }) {
                   </div>
                 </div>
                 <button 
-                  onClick={() => handleRemoveWishlist(item.id)}
+                  onClick={() => handleRemoveWishlist(item.id || item._id)}
                   className="text-gray-400 hover:text-red-500 p-2 transition"
                   title="Remove from wishlist"
                 >

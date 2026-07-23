@@ -1,20 +1,22 @@
 import React, { useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { Mail, Lock, LogIn, RefreshCw, AlertCircle } from 'lucide-react';
+import api from '../services/api';
 
-export default function Login({ user, setUser }) {
+export default function Login({ user, onLoginSuccess }) {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   // If already logged in, redirect to profile immediately
   if (user) {
     return <Navigate to="/profile" replace />;
   }
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError(null);
 
@@ -31,22 +33,21 @@ export default function Login({ user, setUser }) {
       return;
     }
 
-    // Dynamic mock user creation or check matching defaults
-    // Since this is a client-only migration, we accept any credentials,
-    // but we can initialize with the default profile info.
-    const defaultName = trimmedEmail.toLowerCase() === 'priyasharma@gmail.com' ? 'Priya Sharma' : 'Cosmetics Lover';
-    
-    setUser({
-      email: trimmedEmail,
-      fullName: defaultName,
-      phone: '+91 98765 43210',
-      dob: '2002-08-15',
-      gender: 'Female',
-      address: '24, Anna Nagar, Madurai, Tamil Nadu - 625020',
-      skinType: 'Combination'
-    });
+    setLoading(true);
+    try {
+      const data = await api.post('/api/auth/login', {
+        email: trimmedEmail,
+        password: trimmedPw
+      });
 
-    navigate('/profile');
+      onLoginSuccess(data);
+      navigate('/profile');
+    } catch (err) {
+      console.error(err);
+      setError(err.message || 'Login failed. Please check your credentials.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleReset = () => {
@@ -136,12 +137,13 @@ export default function Login({ user, setUser }) {
 
           {/* Actions */}
           <div className="flex justify-center gap-3 pt-4">
-            <button
+             <button
               type="submit"
-              className="flex-grow flex items-center justify-center space-x-2 bg-pink-600 hover:bg-pink-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg hover:shadow-pink-600/35 transition duration-200"
+              disabled={loading}
+              className={`flex-grow flex items-center justify-center space-x-2 bg-pink-600 hover:bg-pink-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg hover:shadow-pink-600/35 transition duration-200 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
             >
               <LogIn size={16} />
-              <span>Login</span>
+              <span>{loading ? 'Logging in...' : 'Login'}</span>
             </button>
 
             <button

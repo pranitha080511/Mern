@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Trash2, Plus, Minus, ShoppingBag } from 'lucide-react';
+import api from '../services/api';
 
 export default function CartDrawer({ isOpen, onClose, cartItems, updateQuantity, removeItem, clearCart }) {
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
@@ -8,13 +9,38 @@ export default function CartDrawer({ isOpen, onClose, cartItems, updateQuantity,
     return cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   };
 
-  const handleCheckout = () => {
-    setCheckoutSuccess(true);
-    setTimeout(() => {
-      setCheckoutSuccess(false);
-      clearCart();
+  const handleCheckout = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Please log in to complete your purchase!');
       onClose();
-    }, 3000);
+      return;
+    }
+
+    try {
+      const productsPayload = cartItems.map(item => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        image: item.image,
+        quantity: item.quantity
+      }));
+
+      await api.post('/api/orders', {
+        products: productsPayload,
+        totalAmount: calculateTotal()
+      });
+
+      setCheckoutSuccess(true);
+      setTimeout(() => {
+        setCheckoutSuccess(false);
+        clearCart();
+        onClose();
+      }, 3000);
+    } catch (err) {
+      console.error('Checkout error:', err);
+      alert(err.message || 'Checkout failed. Please try again.');
+    }
   };
 
   if (!isOpen) return null;

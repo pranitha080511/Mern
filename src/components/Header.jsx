@@ -101,6 +101,18 @@ export default function Header({ user, onLogout, cartCount, onCartClick }) {
               Profile
             </NavLink>
           )}
+          {user?.isAdmin && (
+            <NavLink
+              to="/admin"
+              className={({ isActive }) =>
+                isActive
+                  ? 'text-pink-400 border-b-2 border-pink-400 pb-1 transition duration-200 font-bold bg-pink-900/20 px-3 rounded-md'
+                  : 'text-pink-300 hover:text-pink-400 transition duration-200 pb-1 font-semibold px-3 py-1 rounded-md border border-pink-800/50 hover:border-pink-500'
+              }
+            >
+              👑 Admin Portal
+            </NavLink>
+          )}
         </nav>
       </div>
 
@@ -138,6 +150,15 @@ export default function Header({ user, onLogout, cartCount, onCartClick }) {
                 >
                   Profile ({user.fullName || 'Priya'})
                 </NavLink>
+                {user.isAdmin && (
+                  <NavLink
+                    to="/admin"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={({ isActive }) => `block px-3 py-2 rounded-md text-base font-semibold ${isActive ? 'bg-pink-900/20 text-pink-400' : 'text-pink-300 hover:bg-pink-900/20'}`}
+                  >
+                    👑 Admin Portal
+                  </NavLink>
+                )}
                 <button
                   onClick={() => {
                     onLogout();

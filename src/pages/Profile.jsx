@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Phone, Calendar, MapPin, Heart, ShoppingCart, Key, LogOut, CheckCircle, Edit, Trash2 } from 'lucide-react';
+import { User, Mail, Phone, Calendar, MapPin, Heart, ShoppingCart, Key, LogOut, CheckCircle, Edit, Trash2, MapPin as TrackIcon } from 'lucide-react';
 import api from '../services/api';
+import OrderTracker from '../components/OrderTracker';
 
 export default function Profile({ user, setUser, onLogout }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -20,6 +21,7 @@ export default function Profile({ user, setUser, onLogout }) {
   // Orders list state
   const [orders, setOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
+  const [trackedOrder, setTrackedOrder] = useState(null);
 
   // Wishlist list state
   const [wishlist, setWishlist] = useState([]);
@@ -114,6 +116,7 @@ export default function Profile({ user, setUser, onLogout }) {
   };
 
   return (
+    <>
     <div className="space-y-12 pb-16">
       
       {/* Welcome Banner */}
@@ -328,19 +331,20 @@ export default function Profile({ user, setUser, onLogout }) {
                 <th className="p-4 font-semibold">Product</th>
                 <th className="p-4 font-semibold">Price</th>
                 <th className="p-4 font-semibold">Status</th>
+                <th className="p-4 font-semibold">Track</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 text-sm">
               {loadingOrders ? (
                 <tr>
-                  <td colSpan="4" className="p-8 text-center text-gray-500">
+                  <td colSpan="5" className="p-8 text-center text-gray-500">
                     <div className="w-6 h-6 border-2 border-pink-200 border-t-pink-600 rounded-full animate-spin mx-auto mb-2" />
                     Loading orders...
                   </td>
                 </tr>
               ) : orders.length === 0 ? (
                 <tr>
-                  <td colSpan="4" className="p-8 text-center text-gray-500">No orders found.</td>
+                  <td colSpan="5" className="p-8 text-center text-gray-500">No orders found.</td>
                 </tr>
               ) : (
                 orders.map((order) => (
@@ -356,6 +360,14 @@ export default function Profile({ user, setUser, onLogout }) {
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold inline-block ${order.color}`}>
                         {order.status}
                       </span>
+                    </td>
+                    <td className="p-4">
+                      <button
+                        onClick={() => setTrackedOrder(order)}
+                        className="inline-flex items-center gap-1.5 px-3 py-2 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white text-xs font-bold rounded-xl shadow-md hover:shadow-pink-500/30 transition-all duration-200 hover:scale-105 active:scale-95"
+                      >
+                        🚚 Track Order
+                      </button>
                     </td>
                   </tr>
                 ))
@@ -519,5 +531,15 @@ export default function Profile({ user, setUser, onLogout }) {
       </section>
 
     </div>
+
+    {/* Order Tracker Modal */}
+    {trackedOrder && (
+      <OrderTracker
+        order={trackedOrder}
+        onClose={() => setTrackedOrder(null)}
+      />
+    )}
+    </>
   );
 }
+

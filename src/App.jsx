@@ -9,6 +9,7 @@ import Products from './pages/Products';
 import Profile from './pages/Profile';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import AdminPortal from './pages/AdminPortal';
 import api from './services/api';
 
 export default function App() {
@@ -153,46 +154,59 @@ export default function App() {
 
   return (
     <Router>
-      <div className="flex flex-col min-h-screen bg-pink-50 text-gray-800">
-        <Header 
-          user={user} 
-          onLogout={handleLogout} 
-          cartCount={cart.reduce((sum, item) => sum + item.quantity, 0)} 
-          onCartClick={() => setIsCartOpen(true)}
+      <Routes>
+        {/* ── Admin Portal: fully standalone, no Header/Footer ── */}
+        <Route
+          path="/admin"
+          element={
+            token && user?.isAdmin
+              ? <AdminPortal user={user} onLogout={handleLogout} />
+              : <Navigate to="/" replace />
+          }
         />
-        
-        <main className="flex-grow">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/products" element={<Products addToCart={addToCart} />} />
-            <Route 
-              path="/profile" 
-              element={
-                token ? (
-                  <Profile user={user} setUser={setUser} onLogout={handleLogout} />
-                ) : (
-                  <Navigate to="/login" replace />
-                )
-              } 
-            />
-            <Route path="/login" element={<Login user={user} onLoginSuccess={handleLoginSuccess} />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </main>
 
-        <Footer />
-
-        <CartDrawer 
-          isOpen={isCartOpen} 
-          onClose={() => setIsCartOpen(false)} 
-          cartItems={cart}
-          updateQuantity={updateCartQuantity}
-          removeItem={removeFromCart}
-          clearCart={clearCart}
+        {/* ── All other routes: standard layout ── */}
+        <Route
+          path="*"
+          element={
+            <div className="flex flex-col min-h-screen bg-pink-50 text-gray-800">
+              <Header
+                user={user}
+                onLogout={handleLogout}
+                cartCount={cart.reduce((sum, item) => sum + item.quantity, 0)}
+                onCartClick={() => setIsCartOpen(true)}
+              />
+              <main className="flex-grow">
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/products" element={<Products addToCart={addToCart} user={user} token={token} />} />
+                  <Route
+                    path="/profile"
+                    element={
+                      token
+                        ? <Profile user={user} setUser={setUser} onLogout={handleLogout} />
+                        : <Navigate to="/login" replace />
+                    }
+                  />
+                  <Route path="/login" element={<Login user={user} onLoginSuccess={handleLoginSuccess} />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </main>
+              <Footer />
+              <CartDrawer
+                isOpen={isCartOpen}
+                onClose={() => setIsCartOpen(false)}
+                cartItems={cart}
+                updateQuantity={updateCartQuantity}
+                removeItem={removeFromCart}
+                clearCart={clearCart}
+              />
+            </div>
+          }
         />
-      </div>
+      </Routes>
     </Router>
   );
 }

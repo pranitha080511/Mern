@@ -43,6 +43,7 @@ export const registerUser = async (req, res) => {
         skinType: user.skinType,
         wishlist: user.wishlist,
         cart: user.cart,
+        isAdmin: user.isAdmin,
         token: generateToken(user._id)
       });
     } else {
@@ -80,6 +81,7 @@ export const loginUser = async (req, res) => {
         skinType: user.skinType,
         wishlist: user.wishlist,
         cart: user.cart,
+        isAdmin: user.isAdmin,
         token: generateToken(user._id)
       });
     } else {
@@ -114,7 +116,8 @@ export const getUserProfile = async (req, res) => {
         address: user.address,
         skinType: user.skinType,
         wishlist: user.wishlist,
-        cart: user.cart
+        cart: user.cart,
+        isAdmin: user.isAdmin
       });
     } else {
       return res.status(404).json({ message: 'User not found' });

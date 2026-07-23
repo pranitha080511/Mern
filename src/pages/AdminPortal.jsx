@@ -477,6 +477,18 @@ export default function AdminPortal({ user, onLogout }) {
     } catch (e) { console.error(e); } finally { setUpdatingId(null); }
   };
 
+  const handleDeleteOrder = async (mongoId, orderId) => {
+    if (!window.confirm(`Are you sure you want to delete Order #${orderId}?`)) return;
+    try {
+      await api.delete(`/api/admin/orders/${mongoId}`);
+      fetchOrders();
+      fetchStats();
+    } catch (e) {
+      console.error(e);
+      alert('Failed to delete order');
+    }
+  };
+
   const NAV = [
     { id: 'orders',   icon: '📋', label: 'Orders'     },
     { id: 'products', icon: '🛍️', label: 'Products'   },
@@ -605,13 +617,13 @@ export default function AdminPortal({ user, onLogout }) {
             <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, overflow: 'hidden' }}>
               {/* Header */}
               <div style={{
-                display: 'grid', gridTemplateColumns: '88px 1fr 160px 110px 130px 130px 100px',
+                display: 'grid', gridTemplateColumns: '88px 1fr 150px 100px 120px 110px 110px 60px',
                 padding: '13px 20px',
                 background: 'rgba(255,255,255,0.04)',
                 borderBottom: '1px solid rgba(255,255,255,0.08)',
               }}>
-                {['Order ID', 'Customer', 'Items', 'Total', 'Status', 'Date', 'Update'].map(h => (
-                  <span key={h} style={{ fontSize: 10, fontWeight: 700, color: 'rgba(248,244,240,0.35)', textTransform: 'uppercase', letterSpacing: 0.8 }}>{h}</span>
+                {['Order ID', 'Customer', 'Items', 'Total', 'Status', 'Date', 'Update', 'Del'].map(h => (
+                  <span key={h} style={{ fontSize: 10, fontWeight: 700, color: 'rgba(248,244,240,0.35)', textTransform: 'uppercase', letterSpacing: 0.8, textAlign: h === 'Del' ? 'center' : 'left' }}>{h}</span>
                 ))}
               </div>
 
@@ -627,7 +639,7 @@ export default function AdminPortal({ user, onLogout }) {
                 <div key={order._id}
                   onClick={() => setSelectedOrder(order)}
                   style={{
-                    display: 'grid', gridTemplateColumns: '88px 1fr 160px 110px 130px 130px 100px',
+                    display: 'grid', gridTemplateColumns: '88px 1fr 150px 100px 120px 110px 110px 60px',
                     padding: '15px 20px',
                     borderBottom: i < orders.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
                     cursor: 'pointer', transition: 'background 0.15s', alignItems: 'center',
@@ -665,6 +677,19 @@ export default function AdminPortal({ user, onLogout }) {
                         <option key={s} value={s} style={{ background: '#1a1525' }}>{s}</option>
                       ))}
                     </select>
+                  </div>
+                  <div onClick={e => e.stopPropagation()} style={{ textAlign: 'center' }}>
+                    <button
+                      onClick={() => handleDeleteOrder(order._id, order.orderId)}
+                      title="Delete Order"
+                      style={{
+                        background: 'rgba(239,68,68,0.15)', color: '#f87171',
+                        border: '1px solid rgba(239,68,68,0.3)',
+                        borderRadius: 6, width: 28, height: 28,
+                        cursor: 'pointer', fontSize: 12, fontWeight: 700,
+                        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                      }}
+                    >🗑️</button>
                   </div>
                 </div>
               ))}
@@ -856,14 +881,14 @@ export default function AdminPortal({ user, onLogout }) {
                     {/* Photo */}
                     {fb.photo && (
                       <div
-                        onClick={() => setExpandedPhoto(`http://localhost:5000${fb.photo}`)}
+                        onClick={() => setExpandedPhoto(formatImageUrl(fb.photo))}
                         style={{ cursor: 'pointer', position: 'relative' }}
                       >
                         <img
-                          src={`http://localhost:5000${fb.photo}`}
+                          src={formatImageUrl(fb.photo)}
                           alt="Product feedback"
                           style={{ width: '100%', height: 180, objectFit: 'cover' }}
-                          onError={e => { e.target.style.display = 'none'; }}
+                          onError={e => { e.target.onerror = null; e.target.src = "https://placehold.co/400x300?text=Feedback+Photo"; }}
                         />
                         <div style={{
                           position: 'absolute', bottom: 8, right: 8,

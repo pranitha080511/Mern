@@ -28,7 +28,7 @@ export const submitFeedback = async (req, res) => {
     let photoUrl = '';
     if (req.file) {
       photoPath = req.file.path;
-      photoUrl = `/uploads/feedback/${req.file.filename}`;
+      photoUrl = `uploads/feedback/${req.file.filename}`.replace(/\\/g, '/');
     }
 
     // Determine readable orderId for display

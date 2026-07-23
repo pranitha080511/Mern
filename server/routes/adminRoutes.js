@@ -2,6 +2,7 @@ import express from 'express';
 import {
   getAllOrders,
   updateOrderStatus,
+  deleteOrderAdmin,
   getAllUsers,
   getUserOrdersAdmin,
   getDashboardStats
@@ -16,6 +17,7 @@ router.use(protect, adminOnly);
 router.get('/stats', getDashboardStats);
 router.get('/orders', getAllOrders);
 router.put('/orders/:id/status', updateOrderStatus);
+router.delete('/orders/:id', deleteOrderAdmin);
 router.get('/users', getAllUsers);
 router.get('/users/:userId/orders', getUserOrdersAdmin);
 

@@ -1,6 +1,10 @@
 import nodemailer from 'nodemailer';
 import path from 'path';
 import fs from 'fs';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const sendFeedbackEmail = async ({ userName, userEmail, orderId, rating, comment, photoPath }) => {
   const emailUser = process.env.EMAIL_USER;
@@ -86,11 +90,6 @@ export const sendFeedbackEmail = async ({ userName, userEmail, orderId, rating, 
     return { sent: false, reason: error.message };
   }
 };
-
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export const sendNewProductEmail = async (product, emails) => {
   const emailUser = process.env.EMAIL_USER;

@@ -21,30 +21,42 @@ export const sendFeedbackEmail = async ({ userName, userEmail, orderId, rating, 
 
   const stars = '★'.repeat(rating) + '☆'.repeat(5 - rating);
 
+  let resolvedPhotoPath = photoPath;
+  if (photoPath && !path.isAbsolute(photoPath)) {
+    resolvedPhotoPath = path.join(__dirname, '..', photoPath);
+  }
+
+  const hasPhoto = resolvedPhotoPath && fs.existsSync(resolvedPhotoPath);
+
   const htmlContent = `
-    <div style="font-family: 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto; background: #1a1525; color: #f8f4f0; border-radius: 16px; overflow: hidden;">
-      <div style="background: linear-gradient(135deg, #be185d, #7c3aed); padding: 24px 32px;">
+    <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #1a1525; color: #f8f4f0; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+      <div style="background: linear-gradient(135deg, #be185d, #7c3aed); padding: 24px 32px; text-align: center;">
         <h1 style="margin: 0; font-size: 22px; color: white;">🌸 New Product Feedback</h1>
-        <p style="margin: 4px 0 0; font-size: 13px; color: rgba(255,255,255,0.8);">Hikari's Luxe - Order #${orderId}</p>
+        <p style="margin: 4px 0 0; font-size: 13px; color: rgba(255,255,255,0.85);">Hikari's Luxe - Order #${orderId}</p>
       </div>
       <div style="padding: 28px 32px;">
-        <div style="background: rgba(255,255,255,0.06); border-radius: 12px; padding: 18px; margin-bottom: 20px;">
-          <p style="margin: 0 0 6px; font-size: 12px; color: rgba(248,244,240,0.5); text-transform: uppercase; letter-spacing: 1px;">Customer</p>
-          <p style="margin: 0; font-size: 16px; font-weight: 700;">👤 ${userName}</p>
+        <div style="background: rgba(255,255,255,0.06); border-radius: 12px; padding: 18px; margin-bottom: 16px;">
+          <p style="margin: 0 0 6px; font-size: 11px; color: rgba(248,244,240,0.5); text-transform: uppercase; letter-spacing: 1px;">Customer</p>
+          <p style="margin: 0; font-size: 16px; font-weight: 700; color: #ffffff;">👤 ${userName}</p>
           <p style="margin: 4px 0 0; font-size: 13px; color: rgba(248,244,240,0.6);">📧 ${userEmail}</p>
         </div>
-        <div style="background: rgba(255,255,255,0.06); border-radius: 12px; padding: 18px; margin-bottom: 20px;">
-          <p style="margin: 0 0 6px; font-size: 12px; color: rgba(248,244,240,0.5); text-transform: uppercase; letter-spacing: 1px;">Rating</p>
+        <div style="background: rgba(255,255,255,0.06); border-radius: 12px; padding: 18px; margin-bottom: 16px;">
+          <p style="margin: 0 0 6px; font-size: 11px; color: rgba(248,244,240,0.5); text-transform: uppercase; letter-spacing: 1px;">Rating</p>
           <p style="margin: 0; font-size: 24px; color: #f59e0b;">${stars}</p>
         </div>
-        <div style="background: rgba(255,255,255,0.06); border-radius: 12px; padding: 18px; margin-bottom: 20px;">
-          <p style="margin: 0 0 6px; font-size: 12px; color: rgba(248,244,240,0.5); text-transform: uppercase; letter-spacing: 1px;">Feedback</p>
-          <p style="margin: 0; font-size: 14px; line-height: 1.6;">${comment}</p>
+        <div style="background: rgba(255,255,255,0.06); border-radius: 12px; padding: 18px; margin-bottom: 16px;">
+          <p style="margin: 0 0 6px; font-size: 11px; color: rgba(248,244,240,0.5); text-transform: uppercase; letter-spacing: 1px;">Feedback</p>
+          <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #f8f4f0;">"${comment}"</p>
         </div>
-        ${photoPath ? '<p style="font-size: 13px; color: rgba(248,244,240,0.6);">📷 Product photo attached below</p>' : ''}
+        ${hasPhoto ? `
+          <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 16px; text-align: center; margin-top: 16px;">
+            <p style="margin: 0 0 10px; font-size: 11px; color: rgba(248,244,240,0.5); text-transform: uppercase; letter-spacing: 1px;">📷 Customer Product Photo</p>
+            <img src="cid:productPhoto" alt="Customer Product Photo" style="max-width: 100%; height: auto; max-height: 320px; object-fit: cover; border-radius: 10px; border: 1px solid rgba(255,255,255,0.15);" />
+          </div>
+        ` : ''}
       </div>
-      <div style="padding: 16px 32px; background: rgba(0,0,0,0.3); text-align: center; font-size: 12px; color: rgba(248,244,240,0.4);">
-        Hikari\'s Luxe Admin Portal
+      <div style="padding: 16px 32px; background: rgba(0,0,0,0.3); text-align: center; font-size: 12px; color: rgba(248,244,240,0.4); border-top: 1px solid rgba(255,255,255,0.05);">
+        Hikari's Luxe Admin Portal
       </div>
     </div>
   `;
@@ -57,17 +69,17 @@ export const sendFeedbackEmail = async ({ userName, userEmail, orderId, rating, 
     attachments: [],
   };
 
-  if (photoPath && fs.existsSync(photoPath)) {
+  if (hasPhoto) {
     mailOptions.attachments.push({
-      filename: path.basename(photoPath),
-      path: photoPath,
+      filename: path.basename(resolvedPhotoPath),
+      path: resolvedPhotoPath,
       cid: 'productPhoto',
     });
   }
 
   try {
     await transporter.sendMail(mailOptions);
-    console.log(`✅ Feedback email sent for order #${orderId}`);
+    console.log(`✅ Feedback email sent for order #${orderId} (Photo attached: ${hasPhoto})`);
     return { sent: true };
   } catch (error) {
     console.error('❌ Failed to send feedback email:', error.message);

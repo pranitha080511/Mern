@@ -82,11 +82,11 @@ export const sendFeedbackEmail = async ({ userName, userEmail, orderId, rating, 
   }
 
   try {
-    await transporter.sendMail(mailOptions);
-    console.log(`✅ Feedback email sent for order #${orderId} (Photo attached: ${hasPhoto})`);
-    return { sent: true };
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`✅ Feedback email sent for order #${orderId} to ${emailUser} (MessageID: ${info.messageId}, Photo attached: ${hasPhoto})`);
+    return { sent: true, messageId: info.messageId };
   } catch (error) {
-    console.error('❌ Failed to send feedback email:', error.message);
+    console.error(`❌ Failed to send feedback email for order #${orderId}:`, error);
     return { sent: false, reason: error.message };
   }
 };

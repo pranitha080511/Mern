@@ -617,10 +617,11 @@ export default function AdminPortal({ user, onLogout }) {
             <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, overflow: 'hidden' }}>
               {/* Header */}
               <div style={{
-                display: 'grid', gridTemplateColumns: '88px 1fr 150px 100px 120px 110px 110px 60px',
+                display: 'grid', gridTemplateColumns: '180px minmax(220px, 1.4fr) 180px 110px 140px 120px 120px 70px',
                 padding: '13px 20px',
                 background: 'rgba(255,255,255,0.04)',
                 borderBottom: '1px solid rgba(255,255,255,0.08)',
+                alignItems: 'center',
               }}>
                 {['Order ID', 'Customer', 'Items', 'Total', 'Status', 'Date', 'Update', 'Del'].map(h => (
                   <span key={h} style={{ fontSize: 10, fontWeight: 700, color: 'rgba(248,244,240,0.35)', textTransform: 'uppercase', letterSpacing: 0.8, textAlign: h === 'Del' ? 'center' : 'left' }}>{h}</span>
@@ -639,7 +640,7 @@ export default function AdminPortal({ user, onLogout }) {
                 <div key={order._id}
                   onClick={() => setSelectedOrder(order)}
                   style={{
-                    display: 'grid', gridTemplateColumns: '88px 1fr 150px 100px 120px 110px 110px 60px',
+                    display: 'grid', gridTemplateColumns: '180px minmax(220px, 1.4fr) 180px 110px 140px 120px 120px 70px',
                     padding: '15px 20px',
                     borderBottom: i < orders.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
                     cursor: 'pointer', transition: 'background 0.15s', alignItems: 'center',
@@ -647,12 +648,12 @@ export default function AdminPortal({ user, onLogout }) {
                   onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.04)'}
                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                 >
-                  <span style={{ color: '#e8b4b8', fontWeight: 700, fontSize: 13 }}>#{order.orderId}</span>
-                  <div>
-                    <p style={{ margin: 0, color: '#f8f4f0', fontWeight: 600, fontSize: 13 }}>{order.user?.fullName || 'Unknown'}</p>
-                    <p style={{ margin: 0, color: 'rgba(248,244,240,0.4)', fontSize: 11 }}>{order.user?.email || ''}</p>
+                  <span style={{ color: '#e8b4b8', fontWeight: 700, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>#{order.orderId}</span>
+                  <div style={{ minWidth: 0 }}>
+                    <p style={{ margin: 0, color: '#f8f4f0', fontWeight: 600, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{order.user?.fullName || 'Unknown'}</p>
+                    <p style={{ margin: 0, color: 'rgba(248,244,240,0.4)', fontSize: 11, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{order.user?.email || ''}</p>
                   </div>
-                  <span style={{ color: 'rgba(248,244,240,0.6)', fontSize: 12 }}>
+                  <span style={{ color: 'rgba(248,244,240,0.6)', fontSize: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {order.products.slice(0, 2).map(p => p.name).join(', ')}
                     {order.products.length > 2 && ` +${order.products.length - 2}`}
                   </span>
@@ -685,7 +686,7 @@ export default function AdminPortal({ user, onLogout }) {
                       style={{
                         background: 'rgba(239,68,68,0.15)', color: '#f87171',
                         border: '1px solid rgba(239,68,68,0.3)',
-                        borderRadius: 6, width: 28, height: 28,
+                        borderRadius: 8, width: 32, height: 32,
                         cursor: 'pointer', fontSize: 12, fontWeight: 700,
                         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                       }}

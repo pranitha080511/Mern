@@ -1,40 +1,40 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles, ArrowRight, CheckCircle } from 'lucide-react';
+import { formatImageUrl } from '../utils/imageUtils';
 
 export default function Home() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ name: '', email: '' });
   const [submitted, setSubmitted] = useState(false);
 
- const API_URL = import.meta.env.VITE_API_URL;
+  const categories = [
+    {
+      name: 'Makeup',
+      image: formatImageUrl('images/lipstick.jpg'),
+      desc: 'Lipsticks, Foundations, Eyeliners, Mascara and more.',
+      filter: 'Makeup'
+    },
+    {
+      name: 'Skincare',
+      image: formatImageUrl('images/skincare.jpg'),
+      desc: 'Face Wash, Serum, Moisturizer, Sunscreen and Toners.',
+      filter: 'Skincare'
+    },
+    {
+      name: 'Fragrances',
+      image: formatImageUrl('images/perfume.jpg'),
+      desc: 'Luxury perfumes and body mists for every occasion.',
+      filter: 'Fragrance'
+    },
+    {
+      name: 'Nail Care',
+      image: formatImageUrl('images/nail.jpg'),
+      desc: 'Nail polish, nail art kits and manicure essentials.',
+      filter: 'Nail Care'
+    }
+  ];
 
-const categories = [
-  {
-    name: 'Makeup',
-    image: `${API_URL}/images/lipstick.jpg`,
-    desc: 'Lipsticks, Foundations, Eyeliners, Mascara and more.',
-    filter: 'Makeup'
-  },
-  {
-    name: 'Skincare',
-    image: `${API_URL}/images/skincare.jpg`,
-    desc: 'Face Wash, Serum, Moisturizer, Sunscreen and Toners.',
-    filter: 'Skincare'
-  },
-  {
-    name: 'Fragrances',
-    image: `${API_URL}/images/perfume.jpg`,
-    desc: 'Luxury perfumes and body mists for every occasion.',
-    filter: 'Fragrance'
-  },
-  {
-    name: 'Nail Care',
-    image: `${API_URL}/images/nail.jpg`,
-    desc: 'Nail polish, nail art kits and manicure essentials.',
-    filter: 'Nail Care'
-  }
-];
 
   const handleCategoryClick = (filter) => {
     navigate('/products', { state: { category: filter } });

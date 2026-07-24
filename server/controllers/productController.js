@@ -1,6 +1,7 @@
 import Product from '../models/Product.js';
 import User from '../models/User.js';
 import { sendNewProductEmail } from '../services/emailService.js';
+import { isCloudinaryConfigured, uploadToCloudinary, cleanupLocalFile } from '../services/cloudinaryService.js';
 
 const defaultProducts = [
   { id: 1, name: 'Matte Lipstick', price: 799, image: 'images/lipstick.jpg', category: 'Makeup' },
@@ -61,7 +62,13 @@ export const createProduct = async (req, res) => {
     let image = req.body.image;
 
     if (req.file) {
-      image = `uploads/products/${req.file.filename}`.replace(/\\/g, '/');
+      if (isCloudinaryConfigured) {
+        const uploadResult = await uploadToCloudinary(req.file.path);
+        image = uploadResult.url;
+        cleanupLocalFile(req.file.path);
+      } else {
+        image = `uploads/products/${req.file.filename}`.replace(/\\/g, '/');
+      }
     }
 
     if (!name || !price || !image || !category) {
@@ -107,7 +114,13 @@ export const updateProduct = async (req, res) => {
     let image = req.body.image;
 
     if (req.file) {
-      image = `uploads/products/${req.file.filename}`.replace(/\\/g, '/');
+      if (isCloudinaryConfigured) {
+        const uploadResult = await uploadToCloudinary(req.file.path);
+        image = uploadResult.url;
+        cleanupLocalFile(req.file.path);
+      } else {
+        image = `uploads/products/${req.file.filename}`.replace(/\\/g, '/');
+      }
     }
 
     const product = await Product.findOne({ id: Number(req.params.id) });

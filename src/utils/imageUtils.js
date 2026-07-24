@@ -1,5 +1,12 @@
-const rawUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-const BASE_URL = rawUrl.endsWith('/') ? rawUrl.slice(0, -1) : rawUrl;
+const getBaseUrl = () => {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    return 'https://mern-oknu.onrender.com';
+  }
+  return 'http://localhost:5000';
+};
 
 /**
  * Standardizes image URLs across all frontend components.
@@ -18,8 +25,10 @@ export const formatImageUrl = (img) => {
 
   // Strip leading slash if present
   const cleanPath = img.startsWith('/') ? img.slice(1) : img;
+  const rawUrl = getBaseUrl();
+  const cleanBase = rawUrl.endsWith('/') ? rawUrl.slice(0, -1) : rawUrl;
 
-  return `${BASE_URL}/${cleanPath}`;
+  return `${cleanBase}/${cleanPath}`;
 };
 
 export default formatImageUrl;

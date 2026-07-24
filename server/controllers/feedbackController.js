@@ -57,9 +57,9 @@ export const submitFeedback = async (req, res) => {
     res.status(201).json(savedFeedback);
 
     console.log("Logged in user:", req.user);
-console.log("Customer Email:", req.user.email);
+    console.log("Customer Email:", req.user.email);
 
-    // Send notification email asynchronously in background
+    // Send notification email asynchronously in background and log the result
     sendFeedbackEmail({
       userName: req.user.fullName || req.user.name || 'Customer',
       userEmail: req.user.email,
@@ -67,7 +67,13 @@ console.log("Customer Email:", req.user.email);
       rating: Number(rating),
       comment,
       photoPath
-    }).catch(emailErr => console.error('Error sending feedback notification email:', emailErr));
+    })
+      .then((result) => {
+        console.log('Feedback email result:', result);
+      })
+      .catch((emailErr) => {
+        console.error('Error sending feedback notification email:', emailErr);
+      });
   } catch (error) {
     res.status(500).json({ message: error.message || 'Server error' });
   }

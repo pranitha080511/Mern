@@ -5,7 +5,6 @@ import { formatImageUrl } from '../utils/imageUtils';
 
 export default function CartDrawer({ isOpen, onClose, cartItems, updateQuantity, removeItem, clearCart }) {
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
-  const API_URL = import.meta.env.VITE_API_URL;
 
   const calculateTotal = () => {
     return cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);

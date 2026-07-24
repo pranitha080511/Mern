@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
+import { formatImageUrl } from '../utils/imageUtils';
 
 /* ─────────────────────────── helpers ─────────────────────────── */
 const STATUS_OPTIONS = ['Processing', 'Shipped', 'Delivered'];
@@ -14,15 +15,6 @@ const fmt = (n) => `₹${Number(n).toLocaleString('en-IN', { minimumFractionDigi
 const fmtDate = (d) => new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 const fmtShort = (d) => new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
 
-const formatImageUrl = (img) => {
-  if (!img) return "https://placehold.co/400x400?text=No+Image";
-  if (img.startsWith('http://') || img.startsWith('https://') || img.startsWith('data:')) {
-    return img;
-  }
-  const cleanPath = img.startsWith('/') ? img.slice(1) : img;
-  const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-  return `${baseUrl}/${cleanPath}`;
-};
 
 /* ─────────────────────── StatusBadge ─────────────────────── */
 function StatusBadge({ status }) {
@@ -174,7 +166,7 @@ function OrderDetailModal({ order, onClose }) {
                 display: 'flex', alignItems: 'center', gap: 14,
                 background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '12px 14px',
               }}>
-                <img src={p.image} alt={p.name} style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 8 }} onError={e => { e.target.style.display = 'none'; }} />
+                <img src={formatImageUrl(p.image)} alt={p.name} style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 8 }} onError={e => { e.target.onerror = null; e.target.src = "https://placehold.co/400x400?text=No+Image"; }} />
                 <div style={{ flex: 1 }}>
                   <p style={{ color: '#f8f4f0', fontWeight: 600, fontSize: 14, marginBottom: 2 }}>{p.name}</p>
                   <p style={{ color: 'rgba(248,244,240,0.5)', fontSize: 12 }}>Qty: {p.quantity} × {fmt(p.price)}</p>
@@ -298,7 +290,7 @@ function UserOrdersModal({ user, onClose }) {
                           display: 'flex', alignItems: 'center', gap: 10,
                           background: 'rgba(255,255,255,0.04)', borderRadius: 10, padding: '10px 12px',
                         }}>
-                          <img src={p.image} alt={p.name} style={{ width: 38, height: 38, objectFit: 'cover', borderRadius: 6 }} onError={e => { e.target.style.display = 'none'; }} />
+                          <img src={formatImageUrl(p.image)} alt={p.name} style={{ width: 38, height: 38, objectFit: 'cover', borderRadius: 6 }} onError={e => { e.target.onerror = null; e.target.src = "https://placehold.co/400x400?text=No+Image"; }} />
                           <div style={{ flex: 1 }}>
                             <p style={{ color: '#f8f4f0', fontWeight: 600, fontSize: 13, margin: 0 }}>{p.name}</p>
                             <p style={{ color: 'rgba(248,244,240,0.5)', fontSize: 11, margin: 0 }}>Qty {p.quantity} × {fmt(p.price)}</p>

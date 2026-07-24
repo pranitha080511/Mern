@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Feedback from '../models/Feedback.js';
 import Order from '../models/Order.js';
 import { sendFeedbackEmail } from '../services/emailService.js';
@@ -8,7 +9,13 @@ export const submitFeedback = async (req, res) => {
     const userId = req.user._id;
 
     // Validate order exists, belongs to user, and is delivered
-    const order = await Order.findOne({ _id: orderId, user: userId });
+    let order = null;
+    if (mongoose.Types.ObjectId.isValid(orderId)) {
+      order = await Order.findOne({ _id: orderId, user: userId });
+    }
+    if (!order) {
+      order = await Order.findOne({ orderId: orderId, user: userId });
+    }
     
     if (!order) {
       return res.status(404).json({ message: 'Order not found or unauthorized' });
@@ -19,7 +26,7 @@ export const submitFeedback = async (req, res) => {
     }
 
     // Check no duplicate feedback
-    const existingFeedback = await Feedback.findOne({ user: userId, order: orderId });
+    const existingFeedback = await Feedback.findOne({ user: userId, order: order._id });
     if (existingFeedback) {
       return res.status(400).json({ message: 'Feedback already submitted for this order' });
     }
@@ -48,6 +55,9 @@ export const submitFeedback = async (req, res) => {
 
     // Send HTTP response to user immediately so modal closes without freezing
     res.status(201).json(savedFeedback);
+
+    console.log("Logged in user:", req.user);
+console.log("Customer Email:", req.user.email);
 
     // Send notification email asynchronously in background
     sendFeedbackEmail({

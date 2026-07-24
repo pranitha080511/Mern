@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { formatImageUrl } from '../utils/imageUtils';
 
 /* ─── Status config ─── */
 const STATUS_STEPS = [
@@ -309,8 +310,18 @@ export default function OrderTracker({ order, onClose }) {
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {order.products.map((p, i) => (
-                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 13 }}>
-                  <span style={{ color: 'rgba(248,244,240,0.8)' }}>{p.name} <span style={{ color: 'rgba(248,244,240,0.4)' }}>×{p.quantity}</span></span>
+                <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 13, gap: 10 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    {p.image && (
+                      <img
+                        src={formatImageUrl(p.image)}
+                        alt={p.name}
+                        style={{ width: 36, height: 36, objectFit: 'cover', borderRadius: 6, border: '1px solid rgba(255,255,255,0.1)' }}
+                        onError={e => { e.target.onerror = null; e.target.src = "https://placehold.co/400x400?text=No+Image"; }}
+                      />
+                    )}
+                    <span style={{ color: 'rgba(248,244,240,0.8)' }}>{p.name} <span style={{ color: 'rgba(248,244,240,0.4)' }}>×{p.quantity}</span></span>
+                  </div>
                   <span style={{ color: '#f9a8d4', fontWeight: 700 }}>₹{p.price * p.quantity}</span>
                 </div>
               ))}

@@ -2,16 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Search, ShoppingCart, Check, Heart } from 'lucide-react';
 import api from '../services/api';
+import { formatImageUrl } from '../utils/imageUtils';
 
-const formatImageUrl = (img) => {
-  if (!img) return "https://placehold.co/400x400?text=No+Image";
-  if (img.startsWith('http://') || img.startsWith('https://') || img.startsWith('data:')) {
-    return img;
-  }
-  const cleanPath = img.startsWith('/') ? img.slice(1) : img;
-  const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-  return `${baseUrl}/${cleanPath}`;
-};
 
 export default function Products({ addToCart, user, token }) {
   const location = useLocation();
